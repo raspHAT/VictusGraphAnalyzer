@@ -1,0 +1,90 @@
+form {
+    background-color: pink;
+    color: #333;
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input[type="file"] {
+    margin-bottom: 10px;
+    width: 100%; /* Vollständige Breite für das Input-Feld */
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.file-label {
+    display: flex;
+    align-items: center;
+}
+
+.file-label input {
+    display: none;
+}
+
+.file-label span::after {
+    content: attr(data-file-name);
+    margin-left: 10px;
+}
+
+.file-input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Hinzugefügt, um den Abstand zum Button beizubehalten */
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+}
+
+.button-container button {
+    margin-left: 10px; /* Abstand zwischen Button und Label */
+}
+
+label input[type="file"] {
+    background-color: green; /* Hintergrundfarbe des Buttons ändern */
+    color: yellow; /* Textfarbe des Buttons ändern */
+}
+
+header {
+    background-color: grey;
+    color: pink;
+}
+
+body {
+    margin: 0px;
+    background-color: grey;
+    background-image: url("files/magic_button.png");
+    background-repeat: repeat;
+}
+
+h1 {
+    margin: 0px;
+    padding: 10px;
+}
+
+h2 {
+background-color: pink;
+    color: #333;
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: grey;
+}
+
+

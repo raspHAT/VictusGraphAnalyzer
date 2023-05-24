@@ -1,19 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <style>
-        body {background-color: green}
-    </style>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VictusGraphikAnalyzer</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h1>Hello World!</h1>
-<br>
-Lorem Gypsum
-<h1>Select a File</h1>
-<form action="/upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" id="fileInput">
-    <button type="submit">Upload</button>
-</form>
+<header>
+    <h1>DAS  Tool - Victus Plugin</h1>
+</header>
+<main>
+    <section class="standard-container">
+        <h2>File Upload</h2>
+        <form method="post" action="/upload" enctype="multipart/form-data">
+            <div class="file-input-container">
+                <input type="file" name="file" id="fileInput" class="file-input">
 
+            </div>
+            <button type="submit">Upload</button>
+        </form>
+    </section>
+</main>
 </body>
 </html>
