@@ -5,10 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import com.rasphat.uploadConverter.InMemoryZipConverter;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import com.rasphat.zipExtractor.ZipExtractor;
 
 @Controller
 public class VictusGraphAnalyzerController {
@@ -23,8 +20,8 @@ public class VictusGraphAnalyzerController {
             try {
                 // Hier wird die Dateiverarbeitung durchgeführt
                 byte[] bytes = file.getBytes();
-                InMemoryZipConverter inMemoryZipConverter = new InMemoryZipConverter();
-                inMemoryZipConverter.converterZipInMemory(bytes,"pipiskamanakonja");
+                ZipExtractor zipExtractor = new ZipExtractor();
+                zipExtractor.extractZip(bytes,"pipiskamanakonja");
 
                 // Führe hier die gewünschte Verarbeitung mit der Datei im Arbeitsspeicher aus
                 // ...

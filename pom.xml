@@ -45,7 +45,7 @@
         <dependency>
             <groupId>net.lingala.zip4j</groupId>
             <artifactId>zip4j</artifactId>
-            <version>2.6.4</version> <!-- Prüfen Sie die neueste verfügbare Version -->
+            <version>2.11.4</version> <!-- Prüfen Sie die neueste verfügbare Version -->
         </dependency>
 
 
