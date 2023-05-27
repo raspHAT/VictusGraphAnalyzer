@@ -7,6 +7,5 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class VictusGraphAnalyzerApplication {
     public static void main(String[] args) {
         SpringApplication.run(VictusGraphAnalyzerApplication.class, args);
-        System.out.println("Hello world!");
     }
 }
