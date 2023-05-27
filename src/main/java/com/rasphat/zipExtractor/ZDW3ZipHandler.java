@@ -7,6 +7,7 @@ import java.io.File;
 
 public class ZDW3ZipHandler implements ZipHandler {
     private static final String WRONG_PASSWORD_MSG = "Wrong password";
+
     private static final String CORRUPT_FILE_MSG = "Most likely: Corrupt file, or not from type ZDW3!";
 
     @Override
