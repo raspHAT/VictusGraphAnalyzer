@@ -14,7 +14,7 @@ public class ZipExtractor {
     // A map that associates ZipHandler instances with their corresponding passwords.
     private final Map<String, ZipHandler> handlers = new HashMap<>();
     // The directory path to where the ZIP files are extracted temporarily.
-    private final String tempDirPath = System.getProperty("java.io.tmpdir") + "extractZip"+ File.separator ;
+    private final String tempDirPath = System.getProperty("java.io.tmpdir") + "extractZip" + File.separator;
 
     /**
      * Constructor for the ZipExtractor class.
@@ -44,8 +44,6 @@ public class ZipExtractor {
             ZipHandler handler = handlers.get(password);
             if (handler != null) {
                 handler.handleZip(tempZipFile, tempDirPath, password.toCharArray());
-                if (tempDirPath.isEmpty())
-                    deleteDirectory(new File(tempDirPath));
             } else {
                 throw new IllegalArgumentException("No handler for password " + password);
             }
@@ -60,12 +58,22 @@ public class ZipExtractor {
     }
 
     /**
+     * Deletes the extracted data and its directory.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    public void deleteExtractedData() throws IOException {
+        File directoryToBeDeleted = new File(tempDirPath);
+        deleteDirectory(directoryToBeDeleted);
+    }
+
+    /**
      * Deletes a directory and all its contents.
      *
      * @param directoryToBeDeleted the directory to be deleted.
      * @throws IOException if an I/O error occurs.
      */
-    public static void deleteDirectory(File directoryToBeDeleted) throws IOException {
+    private static void deleteDirectory(File directoryToBeDeleted) throws IOException {
         // Listing all contents of the directory.
         File[] allContents = directoryToBeDeleted.listFiles();
         // Deletion of each file or subdirectory if the directory is not empty.
@@ -92,5 +100,4 @@ public class ZipExtractor {
     public void addHandler(String password, ZipHandler handler) {
         handlers.put(password, handler);
     }
-
 }
