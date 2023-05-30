@@ -14,7 +14,7 @@ public class ZipExtractor {
 
     public ZipExtractor() {
         handlers.put("pipiskamanakonja", new VictusZipHandler());
-        handlers.put("password2", new ZDW3ZipHandler());
+        handlers.put("Tokio$!Server12", new TeneoAndZdwZipHandler());
     }
 
     public void extractZip(byte[] bytes, String password) throws IOException {
