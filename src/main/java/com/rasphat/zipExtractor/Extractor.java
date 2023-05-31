@@ -13,8 +13,7 @@ public class Extractor {
 
     // A map that associates ZipHandler instances with their corresponding passwords.
     private final Map<String, ZipHandler> handlers = new HashMap<>();
-    // The directory path to where the ZIP files are extracted temporarily.
-    private final String tempDirPath = System.getProperty("java.io.tmpdir") + "extractZip" + File.separator;
+
 
     /**
      * Constructor for the ZipExtractor class.
@@ -23,6 +22,19 @@ public class Extractor {
     public Extractor() {
         handlers.put("pipiskamanakonja", new VictusZipHandler());
         handlers.put("Tokio$!Server12", new CombinedZipHandler());
+    }
+
+    /**
+     * This method is used to add a new handler to the handlers Map.
+     * Each handler is responsible for handling a specific type of ZIP file
+     * and is associated with a password that is used to decrypt the ZIP file.
+     *
+     * @param password A string that represents the password to decrypt the ZIP file.
+     * @param handler An instance of a class that implements the ZipHandler interface.
+     *                This handler will be used whenever a ZIP file encrypted with the provided password is encountered.
+     */
+    public void addHandler(String password, ZipHandler handler) {
+        handlers.put(password, handler);
     }
 
     /**
@@ -43,7 +55,7 @@ public class Extractor {
         try {
             ZipHandler handler = handlers.get(password);
             if (handler != null) {
-                handler.handleZip(tempZipFile, tempDirPath, password.toCharArray());
+                handler.handleZip(tempZipFile, TempFolderHandler.TEMP_DIR_PATH, password.toCharArray());
             } else {
                 throw new IllegalArgumentException("No handler for password " + password);
             }
@@ -57,47 +69,4 @@ public class Extractor {
         }
     }
 
-    /**
-     * Deletes the extracted data and its directory.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    public void deleteExtractedData() throws IOException {
-        File directoryToBeDeleted = new File(tempDirPath);
-        deleteDirectory(directoryToBeDeleted);
-    }
-
-    /**
-     * Deletes a directory and all its contents.
-     *
-     * @param directoryToBeDeleted the directory to be deleted.
-     * @throws IOException if an I/O error occurs.
-     */
-    private static void deleteDirectory(File directoryToBeDeleted) throws IOException {
-        // Listing all contents of the directory.
-        File[] allContents = directoryToBeDeleted.listFiles();
-        // Deletion of each file or subdirectory if the directory is not empty.
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        // Deletion of the directory itself.
-        if (!directoryToBeDeleted.delete()) {
-            throw new IOException("Failed to delete " + directoryToBeDeleted);
-        }
-    }
-
-    /**
-     * This method is used to add a new handler to the handlers Map.
-     * Each handler is responsible for handling a specific type of ZIP file
-     * and is associated with a password that is used to decrypt the ZIP file.
-     *
-     * @param password A string that represents the password to decrypt the ZIP file.
-     * @param handler An instance of a class that implements the ZipHandler interface.
-     *                This handler will be used whenever a ZIP file encrypted with the provided password is encountered.
-     */
-    public void addHandler(String password, ZipHandler handler) {
-        handlers.put(password, handler);
-    }
 }

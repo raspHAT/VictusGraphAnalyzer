@@ -1,4 +1,4 @@
-package com.rasphat;
+package com.rasphat.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -16,7 +16,7 @@ public class VictusGraphAnalyzerShutdownController {
     }
 
     @GetMapping("/shutdown")
-    public void shutdown() {
-        SpringApplication.exit(context, () -> 0);
+    public int shutdown() {
+        return SpringApplication.exit(context, () -> 0);
     }
 }

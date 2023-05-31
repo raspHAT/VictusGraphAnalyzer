@@ -1,4 +1,4 @@
-import com.rasphat.VictusGraphAnalyzerController;
+import com.rasphat.Controller.VictusGraphAnalyzerController;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
