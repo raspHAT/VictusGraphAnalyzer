@@ -20,6 +20,8 @@ public class VictusGraphAnalyzerController {
             try {
                 // Hier wird die Dateiverarbeitung durchgeführt
                 byte[] bytes = file.getBytes();
+                System.out.println(file.getContentType());
+
                 Extractor extractor = new Extractor();
                 extractor.extractZip(bytes,"pipiskamanakonja");
 
@@ -46,3 +48,5 @@ public class VictusGraphAnalyzerController {
         return "upload-error.html";
     }
 }
+
+

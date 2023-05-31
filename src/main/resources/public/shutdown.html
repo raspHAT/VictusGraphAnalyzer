@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Server Shutdown</title>
+</head>
+<body>
+<button onclick="shutdownServer()">Server beenden</button>
+
+<script>
+        function shutdownServer() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/shutdown", true);
+            xhr.send();
+        }
+    </script>
+</body>
+</html>

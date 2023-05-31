@@ -10,7 +10,7 @@ class VictusZipHandler implements ZipHandler {
     private static final String CORRUPT_FILE_MSG = "Most likely: Corrupt file, or not from type Victus!";
 
     @Override
-    public void handleZip(File file, String path, Object password) {
+    public void handleZip(File file, String path, char[] password) {
         try {
             if (file != null) {
                 ZipFile zipFile = new ZipFile(file);

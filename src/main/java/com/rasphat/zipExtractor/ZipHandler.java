@@ -20,10 +20,10 @@ public interface ZipHandler {
      * @throws IOException if an I/O error occurs.
      */
     // Original Implementation
-    // void handleZip(File file, String path, char[] password) throws IOException;
+    void handleZip(File file, String path, char[] password) throws IOException;
 
     // Test ob char[] der Class<T> ist?
-    void handleZip(File file, String path, Object password) throws IOException;
+    //void handleZip(File file, String path, Object password) throws IOException;
     /**
      * Handles a given ZipException.
      * This method should implement appropriate actions to be taken when a ZipException occurs.
