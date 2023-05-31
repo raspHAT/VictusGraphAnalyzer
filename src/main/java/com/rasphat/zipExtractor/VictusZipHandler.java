@@ -5,12 +5,12 @@ import net.lingala.zip4j.exception.ZipException;
 
 import java.io.File;
 
-public class VictusZipHandler implements ZipHandler {
+class VictusZipHandler implements ZipHandler {
     private static final String WRONG_PASSWORD_MSG = "Wrong password";
     private static final String CORRUPT_FILE_MSG = "Most likely: Corrupt file, or not from type Victus!";
 
     @Override
-    public void handleZip(File file, String path, char[] password) {
+    public void handleZip(File file, String path, Object password) {
         try {
             if (file != null) {
                 ZipFile zipFile = new ZipFile(file);

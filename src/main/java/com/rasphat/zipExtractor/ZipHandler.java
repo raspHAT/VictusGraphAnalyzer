@@ -19,8 +19,11 @@ public interface ZipHandler {
      * @param password the password to be used to decrypt the ZIP file, if encrypted.
      * @throws IOException if an I/O error occurs.
      */
-    void handleZip(File file, String path, char[] password) throws IOException;
+    // Original Implementation
+    // void handleZip(File file, String path, char[] password) throws IOException;
 
+    // Test ob char[] der Class<T> ist?
+    void handleZip(File file, String path, Object password) throws IOException;
     /**
      * Handles a given ZipException.
      * This method should implement appropriate actions to be taken when a ZipException occurs.

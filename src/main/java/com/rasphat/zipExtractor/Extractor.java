@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * The ZipExtractor class is responsible for extracting ZIP files.
  */
-public class ZipExtractor {
+public class Extractor {
 
     // A map that associates ZipHandler instances with their corresponding passwords.
     private final Map<String, ZipHandler> handlers = new HashMap<>();
@@ -20,7 +20,7 @@ public class ZipExtractor {
      * Constructor for the ZipExtractor class.
      * Initializes handlers for specific passwords.
      */
-    public ZipExtractor() {
+    public Extractor() {
         handlers.put("pipiskamanakonja", new VictusZipHandler());
         handlers.put("Tokio$!Server12", new CombinedZipHandler());
     }
