@@ -1,12 +1,12 @@
-import com.rasphat.Controller.VictusGraphAnalyzerController;
+import com.rasphat.Controller.MainController;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
-public class VictusGraphAnalyzerControllerTests {
+public class MainControllerTests {
     @Test
     public void testIndex_ReturnsCorrectViewName() {
-        VictusGraphAnalyzerController controller = new VictusGraphAnalyzerController();
+        MainController controller = new MainController();
         String viewName = controller.index();
         assertEquals("index.html", viewName);
     }

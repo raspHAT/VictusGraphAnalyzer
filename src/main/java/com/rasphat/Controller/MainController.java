@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.rasphat.zipExtractor.Extractor;
 
 @Controller
-public class VictusGraphAnalyzerController {
+public class MainController {
     @GetMapping("/")
     public String index() {
         return "index.html";

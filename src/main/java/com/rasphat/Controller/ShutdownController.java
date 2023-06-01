@@ -7,11 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class VictusGraphAnalyzerShutdownController {
+public class ShutdownController {
     private final ApplicationContext context;
 
     @Autowired
-    public VictusGraphAnalyzerShutdownController(ApplicationContext context) {
+    public ShutdownController(ApplicationContext context) {
         this.context = context;
     }
 

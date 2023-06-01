@@ -4,6 +4,7 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 import java.io.File;
+import java.io.IOException;
 
 class CombinedZipHandler extends TempFolderHandler implements ZipHandler {
     private static final String WRONG_PASSWORD_MSG = "Wrong password";
@@ -11,18 +12,21 @@ class CombinedZipHandler extends TempFolderHandler implements ZipHandler {
 
     @Override
     public void handleZip(File file, String path, char[] password) {
-        try {
-            if (file != null) {
-                ZipFile zipFile = new ZipFile(file);
+
+        if (file != null) {
+            try (ZipFile zipFile = new ZipFile(file)) {
                 if (zipFile.isEncrypted()) {
                     zipFile.setPassword(password);
                 }
                 zipFile.extractAll(path);
+            } catch (ZipException e) {
+                handleException(e);
+            } catch (IOException e) {
+                handleIOException(e);
             }
-        } catch (ZipException e) {
-            handleException(e);
         }
     }
+
 
     @Override
     public void handleException(ZipException e) {
@@ -33,4 +37,10 @@ class CombinedZipHandler extends TempFolderHandler implements ZipHandler {
             e.printStackTrace();
         }
     }
+
+    public void handleIOException(IOException e) {
+        e.printStackTrace();
+    }
+
+
 }
