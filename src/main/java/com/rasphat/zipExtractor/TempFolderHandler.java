@@ -13,7 +13,7 @@ public abstract class TempFolderHandler {
      *
      * @throws IOException if an I/O error occurs.
      */
-    public void deleteExtractedData() throws IOException {
+    public static void deleteExtractedData() throws IOException {
         File directoryToBeDeleted = new File(TEMP_DIR_PATH);
         deleteDirectory(directoryToBeDeleted);
     }
@@ -24,7 +24,7 @@ public abstract class TempFolderHandler {
      * @param directoryToBeDeleted the directory to be deleted.
      * @throws IOException if an I/O error occurs.
      */
-    private static void deleteDirectory(File directoryToBeDeleted) throws IOException {
+    public static void deleteDirectory(File directoryToBeDeleted) throws IOException {
         // Listing all contents of the directory.
         File[] allContents = directoryToBeDeleted.listFiles();
         // Deletion of each file or subdirectory if the directory is not empty.
