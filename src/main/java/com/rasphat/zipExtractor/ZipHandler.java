@@ -23,7 +23,10 @@ public interface ZipHandler {
     void handleZip(File file, String path, char[] password) throws IOException;
 
     // Test ob char[] der Class<T> ist?
-    //void handleZip(File file, String path, Object password) throws IOException;
+    // void handleZip(File file, String path, Object password) throws IOException;
+    // erster Versuch fehlgeschlagen!
+
+
     /**
      * Handles a given ZipException.
      * This method should implement appropriate actions to be taken when a ZipException occurs.
@@ -31,4 +34,8 @@ public interface ZipHandler {
      * @param e the ZipException to be handled.
      */
     void handleException(ZipException e);
+
+
+
+    void handleIOException(IOException e);
 }

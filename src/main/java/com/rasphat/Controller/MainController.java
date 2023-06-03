@@ -21,9 +21,13 @@ public class MainController {
                 // Hier wird die Dateiverarbeitung durchgeführt
                 byte[] bytes = file.getBytes();
                 System.out.println(file.getContentType());
+                String contentType = file.getContentType();
 
                 Extractor extractor = new Extractor();
-                extractor.extractZip(bytes,"pipiskamanakonja");
+                // VICTUS
+                //extractor.extractZip(bytes,"pipiskamanakonja", contentType);
+                // TENEO and ZDW3
+                extractor.extractZip(bytes,"Tokio$!Server12", contentType);
 
                 // Führe hier die gewünschte Verarbeitung mit der Datei im Arbeitsspeicher aus
                 // ...

@@ -26,12 +26,12 @@ button[type="submit"] {
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    /*transition: background-color 0.3s ease;*/
 }
 
 button[type="submit"]:hover {
     background-color: #0056b3;
-}
+/
 
 .file-label {
     display: flex;
@@ -42,16 +42,16 @@ button[type="submit"]:hover {
     display: none;
 }
 
-.file-label span::after {
+/*.file-label span::after {
     content: attr(data-file-name);
     margin-left: 10px;
-}
+}*/
 
-.file-input-container {
+/*.file-input-container {
     display: flex;
     align-items: center;
-    margin-bottom: 10px; /* Hinzugefügt, um den Abstand zum Button beizubehalten */
-}
+    margin-bottom: 10px; *//* Hinzugefügt, um den Abstand zum Button beizubehalten *//*
+}*/
 
 .button-container {
     display: flex;

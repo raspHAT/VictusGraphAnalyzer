@@ -4,6 +4,7 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 import java.io.File;
+import java.io.IOException;
 
 class VictusZipHandler extends TempFolderHandler implements ZipHandler {
     private static final String WRONG_PASSWORD_MSG = "Wrong password";
@@ -17,7 +18,7 @@ class VictusZipHandler extends TempFolderHandler implements ZipHandler {
                 if (zipFile.isEncrypted()) {
                     zipFile.setPassword(password);
                 }
-                zipFile.extractAll(path);
+                zipFile.extractAll(path); //Hier liegt der Grund für die Exception, wenn
             }
         } catch (ZipException e) {
             handleException(e);
@@ -28,9 +29,24 @@ class VictusZipHandler extends TempFolderHandler implements ZipHandler {
     public void handleException(ZipException e) {
         if (e.getType() == ZipException.Type.WRONG_PASSWORD) {
             System.out.println(WRONG_PASSWORD_MSG);
-        } else {
+            System.out.println(e.getType());
+            System.out.println(e.getMessage() + "Message");
+            System.out.println(e.getLocalizedMessage());
+            System.out.println(e.getClass());
+        } else if (e.getMessage().equals("Zip headers not found. Probably not a zip file")) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+
+        }
+
+        else {
             System.out.println(CORRUPT_FILE_MSG);
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void handleIOException(IOException e) {
+        System.out.println(e.getMessage());
     }
 }

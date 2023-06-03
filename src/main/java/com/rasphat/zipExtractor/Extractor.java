@@ -1,5 +1,7 @@
 package com.rasphat.zipExtractor;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,7 +26,7 @@ public class Extractor {
         handlers.put("Tokio$!Server12", new CombinedZipHandler());
     }
 
-    /**
+    /** for Mocking?!? 2023-06-03
      * This method is used to add a new handler to the handlers Map.
      * Each handler is responsible for handling a specific type of ZIP file
      * and is associated with a password that is used to decrypt the ZIP file.
@@ -44,9 +46,10 @@ public class Extractor {
      * @param password the password for the ZIP file.
      * @throws IOException if an I/O error occurs.
      */
-    public void extractZip(byte[] bytes, String password) throws IOException {
+    public void extractZip(byte[] bytes, String password, String contentType) throws IOException {
         // Creation of a temporary file and writing the bytes to it.
-        File tempZipFile = File.createTempFile("extractZip", ".zip");
+        // MultipartFile file = new MultipartFile();
+        File tempZipFile = File.createTempFile( contentType + "_extractZip", ".zip");
         try (FileOutputStream fos = new FileOutputStream(tempZipFile)) {
             fos.write(bytes);
         }
@@ -61,12 +64,10 @@ public class Extractor {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
+        }   //finally {
             // Ensuring the deletion of the temporary ZIP file.
-            if (!tempZipFile.delete()) {
-                tempZipFile.deleteOnExit();
-            }
-        }
+            //if (!tempZipFile.delete()) {
+            // tempZipFile.deleteOnExit();
+            //}
     }
-
 }

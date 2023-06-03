@@ -25,7 +25,8 @@ public class ExtractorTest {
         byte[] testBytes = new byte[] {1, 2, 3, 4 ,5};
         String testPassword = "mockPassword";
 
-        extractor.extractZip(testBytes, testPassword);
+        String contentType = null;
+        extractor.extractZip(testBytes, testPassword, contentType);
         System.out.println(new char[] {'R', '2', 'D', '2','&', '3', 'C', 'P', 'O'});
 
         verify(handlerMock, times(1)).handleZip(any(File.class), anyString(), any(char[].class));

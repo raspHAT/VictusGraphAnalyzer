@@ -27,16 +27,37 @@ class CombinedZipHandler extends TempFolderHandler implements ZipHandler {
         }
     }
 
-
     @Override
+    public void handleException(ZipException e) {
+        if (e.getType() == ZipException.Type.WRONG_PASSWORD) {
+            System.out.println(WRONG_PASSWORD_MSG);
+            System.out.println(e.getType());
+            System.out.println(e.getMessage() + "Message");
+            System.out.println(e.getLocalizedMessage());
+            System.out.println(e.getClass());
+        } else if (e.getMessage().equals("Zip headers not found. Probably not a zip file")) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+
+        }
+
+        else {
+            System.out.println(CORRUPT_FILE_MSG);
+            e.printStackTrace();
+        }
+    }
+
+
+
+   /* @Override
     public void handleException(ZipException e) {
         if (e.getType() == ZipException.Type.WRONG_PASSWORD) {
             System.out.println(WRONG_PASSWORD_MSG);
         } else {
             System.out.println(CORRUPT_FILE_MSG);
-            e.printStackTrace();
+            // e.printStackTrace();
         }
-    }
+    }*/
 
     public void handleIOException(IOException e) {
         e.printStackTrace();
