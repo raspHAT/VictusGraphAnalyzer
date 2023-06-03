@@ -27,7 +27,7 @@ public class MainController {
                 // VICTUS
                 //extractor.extractZip(bytes,"pipiskamanakonja", contentType);
                 // TENEO and ZDW3
-                extractor.extractZip(bytes,"Tokio$!Server12", contentType);
+                extractor.extractZip(bytes,"Tokio$%Server12", contentType);
 
                 // Führe hier die gewünschte Verarbeitung mit der Datei im Arbeitsspeicher aus
                 // ...

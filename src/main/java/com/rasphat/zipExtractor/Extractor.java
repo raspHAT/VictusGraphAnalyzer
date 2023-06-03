@@ -23,7 +23,7 @@ public class Extractor {
      */
     public Extractor() {
         handlers.put("pipiskamanakonja", new VictusZipHandler());
-        handlers.put("Tokio$!Server12", new CombinedZipHandler());
+        handlers.put("Tokio$%Server12", new CombinedZipHandler());
     }
 
     /** for Mocking?!? 2023-06-03
