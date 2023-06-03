@@ -4,7 +4,9 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.zip.ZipInputStream;
 
 class CombinedZipHandler extends TempFolderHandler implements ZipHandler {
     private static final String WRONG_PASSWORD_MSG = "Wrong password";
@@ -12,18 +14,19 @@ class CombinedZipHandler extends TempFolderHandler implements ZipHandler {
 
     @Override
     public void handleZip(File file, String path, char[] password) {
+        if (file == null || !isZipFile(file)) {
+            System.out.println("File is null, or is no zipfile");
+            return;
+        }
 
-        if (file != null) {
-            try (ZipFile zipFile = new ZipFile(file)) {
-                if (zipFile.isEncrypted()) {
-                    zipFile.setPassword(password);
-                }
-                zipFile.extractAll(path);
-            } catch (ZipException e) {
-                handleException(e);
-            } catch (IOException e) {
-                handleIOException(e);
+        try {
+            ZipFile zipFile = new ZipFile(file);
+            if (zipFile.isEncrypted()) {
+                zipFile.setPassword(password);
             }
+            zipFile.extractAll(path); //Hier lag ;) der Grund für die Exception, wenn keine zip datei!
+        } catch (ZipException e) {
+            handleException(e);
         }
     }
 
@@ -63,5 +66,12 @@ class CombinedZipHandler extends TempFolderHandler implements ZipHandler {
         e.printStackTrace();
     }
 
+    private boolean isZipFile(File file) {
+        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
+            return zipInputStream.getNextEntry() != null;
+        } catch (IOException e) {
+            return false;
+        }
+    }
 
 }

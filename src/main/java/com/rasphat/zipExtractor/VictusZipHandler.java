@@ -3,6 +3,9 @@ package com.rasphat.zipExtractor;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
+import java.io.FileInputStream;
+import java.util.zip.ZipInputStream;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -12,18 +15,22 @@ class VictusZipHandler extends TempFolderHandler implements ZipHandler {
 
     @Override
     public void handleZip(File file, String path, char[] password) {
+        if (file == null || !isZipFile(file)) {
+            System.out.println("File is null, or is no zipfile");
+            return;
+        }
+
         try {
-            if (file != null) {
-                ZipFile zipFile = new ZipFile(file);
-                if (zipFile.isEncrypted()) {
-                    zipFile.setPassword(password);
-                }
-                zipFile.extractAll(path); //Hier liegt der Grund für die Exception, wenn
+            ZipFile zipFile = new ZipFile(file);
+            if (zipFile.isEncrypted()) {
+                zipFile.setPassword(password);
             }
+            zipFile.extractAll(path); //Hier lag ;) der Grund für die Exception, wenn keine zip datei!
         } catch (ZipException e) {
             handleException(e);
         }
     }
+
 
     @Override
     public void handleException(ZipException e) {
@@ -49,4 +56,13 @@ class VictusZipHandler extends TempFolderHandler implements ZipHandler {
     public void handleIOException(IOException e) {
         System.out.println(e.getMessage());
     }
+
+    private boolean isZipFile(File file) {
+        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
+            return zipInputStream.getNextEntry() != null;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
 }
