@@ -52,7 +52,7 @@ class CombinedZipHandler extends TempFolderHandler implements ZipHandler {
 
 
 
-   /* @Override
+    /* @Override
     public void handleException(ZipException e) {
         if (e.getType() == ZipException.Type.WRONG_PASSWORD) {
             System.out.println(WRONG_PASSWORD_MSG);
