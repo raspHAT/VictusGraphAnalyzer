@@ -1,5 +1,4 @@
-// No package due to missing directory depth.
-// If a package is required, move the file to a location deeper in the file system.
+package testJava;
 
 import com.rasphat.zipExtractor.Extractor;
 import com.rasphat.zipExtractor.ZipHandler;
