@@ -10,8 +10,8 @@ import java.io.File;
 import java.io.IOException;
 
 class VictusZipHandler extends TempFolderHandler implements ZipHandler {
-    private static final String WRONG_PASSWORD_MSG = "Wrong password";
-    private static final String CORRUPT_FILE_MSG = "Most likely: Corrupt file, or not from type Victus!";
+    //private static final String WRONG_PASSWORD_MSG = "Wrong password";
+    //private static final String CORRUPT_FILE_MSG = "Most likely: Corrupt file, or not from type Victus!";
 
     @Override
     public void handleZip(File file, String path, char[] password) {
@@ -32,7 +32,7 @@ class VictusZipHandler extends TempFolderHandler implements ZipHandler {
     }
 
 
-    @Override
+/*    @Override
     public void handleException(ZipException e) {
         if (e.getType() == ZipException.Type.WRONG_PASSWORD) {
             System.out.println(WRONG_PASSWORD_MSG);
@@ -50,12 +50,14 @@ class VictusZipHandler extends TempFolderHandler implements ZipHandler {
             System.out.println(CORRUPT_FILE_MSG);
             e.printStackTrace();
         }
-    }
+    }*/
 
-    @Override
+  /*  @Override
     public void handleIOException(IOException e) {
         System.out.println(e.getMessage());
     }
+*/
+
 
     private boolean isZipFile(File file) {
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {

@@ -22,20 +22,4 @@ public interface ZipHandler {
     void handleZip(File file, String path, char[] password) throws IOException;
 
 
-    /**
-     * Handles a given ZipException.
-     * This method should implement appropriate actions to be taken when a ZipException occurs.
-     *
-     * @param e the ZipException to be handled.
-     */
-    void handleException(ZipException e);
-
-
-    /**
-     * Handles a given IOException.
-     * This method should implement appropriate actions to be taken when a IOException occurs.
-     *
-     * @param e the IOException to be handled.
-     */
-    void handleIOException(IOException e);
 }
