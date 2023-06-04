@@ -1,6 +1,8 @@
 package com.rasphat.archiveExtractor;
 
 import net.lingala.zip4j.exception.ZipException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.util.zip.ZipInputStream;
 
 public abstract class AbstractHandler {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractHandler.class);
 
     // The directory path to where the ZIP files are extracted temporarily.
     public static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "extractZip" + File.separator;
@@ -44,16 +47,16 @@ public abstract class AbstractHandler {
      */
     public void handleException(ZipException e) {
         if (e.getType() == ZipException.Type.WRONG_PASSWORD) {
-            System.out.println(WRONG_PASSWORD_MSG);
-            System.out.println(e.getType());
-            System.out.println(e.getMessage() + "Message");
-            System.out.println(e.getLocalizedMessage());
-            System.out.println(e.getClass());
+            logger.debug(WRONG_PASSWORD_MSG);
+            logger.debug(e.getType().toString());
+            logger.debug(e.getMessage() + "Message");
+            logger.debug(e.getLocalizedMessage());
+            logger.debug(e.getClass().toString());
         } else if (e.getMessage().equals("Zip headers not found. Probably not a zip file")) {
-            System.out.println(e.getMessage());
+            logger.debug(e.getMessage());
             e.printStackTrace();
         } else {
-            System.out.println(CORRUPT_FILE_MSG);
+            logger.debug(CORRUPT_FILE_MSG);
             e.printStackTrace();
         }
     }

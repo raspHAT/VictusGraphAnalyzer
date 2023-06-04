@@ -2,6 +2,9 @@ package com.rasphat.archiveExtractor;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.io.File;
 
@@ -9,6 +12,8 @@ import java.io.File;
  * The VictusZipHandler class handles extraction of ZIP files with Victus encryption.
  */
 class VictusAbstractHandler extends AbstractHandler implements ArchiveHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(VictusAbstractHandler.class);
 
     /**
      * Handles a given ZIP file with Victus encryption.
@@ -20,7 +25,7 @@ class VictusAbstractHandler extends AbstractHandler implements ArchiveHandler {
     @Override
     public void handleZip(File file, String path, char[] password) {
         if (file == null || !isZipFile(file)) {
-            System.out.println("File is null, or is no zipfile");
+            logger.info("File is null, or is no zipfile");
             return;
         }
 

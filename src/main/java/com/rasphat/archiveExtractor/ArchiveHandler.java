@@ -1,5 +1,8 @@
 package com.rasphat.archiveExtractor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -8,7 +11,6 @@ import java.io.IOException;
  * by classes that handle specific types of ZIP files.
  */
 public interface ArchiveHandler {
-
     /**
      * Handles a given ZIP file.
      *

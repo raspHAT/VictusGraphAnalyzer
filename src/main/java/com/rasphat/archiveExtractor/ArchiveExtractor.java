@@ -1,5 +1,8 @@
 package com.rasphat.archiveExtractor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +14,8 @@ import java.util.Map;
  */
 public class ArchiveExtractor {
 
+    private static final Logger logger = LoggerFactory.getLogger(ArchiveExtractor.class);
+
     // A map that associates ArchiveHandler instances with their corresponding passwords.
     private final Map<String, ArchiveHandler> handlers = new HashMap<>();
 
@@ -21,7 +26,7 @@ public class ArchiveExtractor {
      */
     public ArchiveExtractor() {
         handlers.put("pipiskamanakonja", new VictusAbstractHandler());
-        handlers.put("Tokio$%Server12", new CombinedAbstractHandler());
+        handlers.put("Tokio$%Server12", new CombinedHandler());
     }
 
     /**

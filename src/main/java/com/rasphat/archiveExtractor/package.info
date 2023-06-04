@@ -1,0 +1,144 @@
+Das Project package lutet com.rasphat.
+
+
+Old package com.rasphat.zipExtractor;
+new package name: archiveExtraktor;
+
+Interface:
+ArchiveHandler()
+    void handleZip(File file, String path, char[] password) throws IOException;
+
+Dann gibt es eine: public abstract class AbstractHandler {}
+
+Here are the members:
+    public static final String
+    - TEMP_DIR_PATH
+    - WRONG_PASSWORD_MSG
+    - CORRUPT_FILE_MSG
+
+    public static void deleteExtractedData() throws IOException {}
+
+    private static void deleteDirectory(File directoryToBeDeleted) throws IOException {}
+
+    public void handleException(ZipException e) {}
+
+        public void handleIOException(IOException e) {}
+
+            protected boolean isZipFile(File file) {}
+
+
+
+Klasse ArchiveExtraxtor public class ArchiveExtractor {}
+
+
+Here are the members:
+    private final Map<String, ArchiveHandler> handlers;
+
+
+    Konstruktor:
+        public ArchiveExtractor() {}
+
+public void addHandler(String password, ArchiveHandler handler)
+
+    public void extractZip(byte[] bytes, String password, String contentType) throws IOException {}
+
+
+
+class CombinedAbstractHandler extends AbstractHandler implements ArchiveHandler {}
+    @Override
+    public void handleZip(File file, String path, char[] password) {}
+
+
+class VictusAbstractHandler extends AbstractHandler implements ArchiveHandler {}
+    @Override
+    public void handleZip(File file, String path, char[] password) {}
+
+
+package com.rasphat.archiveExtractor;
+
+public interface ArchiveHandler {
+    void handleZip(File file, String path, char[] password) throws IOException;
+}
+
+public abstract class AbstractHandler {
+    public static final String TEMP_DIR_PATH;
+    public static final String WRONG_PASSWORD_MSG;
+    public static final String CORRUPT_FILE_MSG;
+
+    public static void deleteExtractedData() throws IOException;
+
+    private static void deleteDirectory(File directoryToBeDeleted) throws IOException;
+
+    public void handleException(ZipException e);
+
+    public void handleIOException(IOException e);
+
+    protected boolean isZipFile(File file);
+}
+
+public class ArchiveExtractor {
+    private final Map<String, ArchiveHandler> handlers;
+
+    public ArchiveExtractor();
+
+    public void addHandler(String password, ArchiveHandler handler);
+
+    public void extractZip(byte[] bytes, String password, String contentType) throws IOException;
+}
+
+public class CombinedAbstractHandler extends AbstractHandler implements ArchiveHandler {
+    @Override
+    public void handleZip(File file, String path, char[] password);
+}
+
+public class VictusAbstractHandler extends AbstractHandler implements ArchiveHandler {
+    @Override
+    public void handleZip(File file, String path, char[] password);
+}
+
+
+-------------------
+----package API----
+-------------------
+package com.rasphat.archiveExtractor;
+
+public interface ArchiveHandler {
+    void handleZip(File file, String path, char[] password) throws IOException;
+}
+
+public abstract class AbstractHandler {
+    public static final String TEMP_DIR_PATH;
+    public static final String WRONG_PASSWORD_MSG;
+    public static final String CORRUPT_FILE_MSG;
+
+    public static void deleteExtractedData() throws IOException;
+
+    private static void deleteDirectory(File directoryToBeDeleted) throws IOException;
+
+    public void handleException(ZipException e);
+
+    public void handleIOException(IOException e);
+
+    protected boolean isZipFile(File file);
+}
+
+public class ArchiveExtractor {
+    private final Map<String, ArchiveHandler> handlers;
+
+    public ArchiveExtractor();
+
+    public void addHandler(String password, ArchiveHandler handler);
+
+    public void extractZip(byte[] bytes, String password, String contentType) throws IOException;
+}
+
+public class CombinedHandler extends AbstractHandler implements ArchiveHandler {
+    @Override
+    public void handleZip(File file, String path, char[] password);
+}
+
+public class VictusHandler extends AbstractHandler implements ArchiveHandler {
+    @Override
+    public void handleZip(File file, String path, char[] password);
+}
+

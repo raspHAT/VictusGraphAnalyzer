@@ -1,6 +1,8 @@
 package com.rasphat.Controller;
 
 import com.rasphat.archiveExtractor.ArchiveExtractor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class MainController {
+    private static final Logger logger = LoggerFactory.getLogger(MainController.class);
     @GetMapping("/")
     public String index() {
         return "index.html";
@@ -20,7 +23,7 @@ public class MainController {
             try {
                 // Hier wird die Dateiverarbeitung durchgeführt
                 byte[] bytes = file.getBytes();
-                System.out.println(file.getContentType());
+                logger.info(file.getContentType());
                 String contentType = file.getContentType();
 
                 ArchiveExtractor archiveExtractor = new ArchiveExtractor();
@@ -44,12 +47,12 @@ public class MainController {
 
     @GetMapping("/success")
     public String uploadSuccess() {
-        return "upload-success.html";
+        return "success.html";
     }
 
     @GetMapping("/error")
     public String uploadError() {
-        return "upload-error.html";
+        return "success.html";
     }
 }
 
