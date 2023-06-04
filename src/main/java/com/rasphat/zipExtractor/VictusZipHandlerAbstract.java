@@ -9,7 +9,7 @@ import java.util.zip.ZipInputStream;
 import java.io.File;
 import java.io.IOException;
 
-class VictusZipHandler extends TempFolderHandler implements ZipHandler {
+class VictusZipHandlerAbstract extends ZipHandlerAbstract implements ZipHandler {
     //private static final String WRONG_PASSWORD_MSG = "Wrong password";
     //private static final String CORRUPT_FILE_MSG = "Most likely: Corrupt file, or not from type Victus!";
 

@@ -1,7 +1,5 @@
 package com.rasphat.zipExtractor;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,8 +20,8 @@ public class Extractor {
      * Initializes handlers for specific passwords.
      */
     public Extractor() {
-        handlers.put("pipiskamanakonja", new VictusZipHandler());
-        handlers.put("Tokio$%Server12", new CombinedZipHandler());
+        handlers.put("pipiskamanakonja", new VictusZipHandlerAbstract());
+        handlers.put("Tokio$%Server12", new CombinedZipHandlerAbstract());
     }
 
     /** for Mocking?!? 2023-06-03
@@ -58,7 +56,7 @@ public class Extractor {
         try {
             ZipHandler handler = handlers.get(password);
             if (handler != null) {
-                handler.handleZip(tempZipFile, TempFolderHandler.TEMP_DIR_PATH, password.toCharArray());
+                handler.handleZip(tempZipFile, ZipHandlerAbstract.TEMP_DIR_PATH, password.toCharArray());
             } else {
                 throw new IllegalArgumentException("No handler for password " + password);
             }

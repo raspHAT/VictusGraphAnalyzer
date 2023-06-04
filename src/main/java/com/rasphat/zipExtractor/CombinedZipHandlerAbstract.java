@@ -5,9 +5,8 @@ import net.lingala.zip4j.exception.ZipException;
 
 
 import java.io.File;
-import java.io.IOException;
 
-class CombinedZipHandler extends TempFolderHandler implements ZipHandler {
+class CombinedZipHandlerAbstract extends ZipHandlerAbstract implements ZipHandler {
     //private static final String WRONG_PASSWORD_MSG = "Wrong password";
     //private static final String CORRUPT_FILE_MSG = "Most likely: Corrupt file, or not from type Teneo or ZDW3!";
 
