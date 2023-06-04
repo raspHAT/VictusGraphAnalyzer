@@ -1,11 +1,11 @@
 package com.rasphat.Controller;
 
+import com.rasphat.zipExtractor.ArchiveHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import com.rasphat.zipExtractor.Extractor;
 
 @Controller
 public class MainController {
@@ -23,11 +23,11 @@ public class MainController {
                 System.out.println(file.getContentType());
                 String contentType = file.getContentType();
 
-                Extractor extractor = new Extractor();
+                ArchiveHandler archiveHandler = new ArchiveHandler();
                 // VICTUS
                 //extractor.extractZip(bytes,"pipiskamanakonja", contentType);
                 // TENEO and ZDW3
-                extractor.extractZip(bytes,"Tokio$%Server12", contentType);
+                archiveHandler.extractZip(bytes,"Tokio$%Server12", contentType);
 
                 // Führe hier die gewünschte Verarbeitung mit der Datei im Arbeitsspeicher aus
                 // ...

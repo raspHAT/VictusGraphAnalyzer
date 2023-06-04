@@ -7,24 +7,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The ZipExtractor class is responsible for extracting ZIP files.
+ * The ArchiveExtractor class is responsible for extracting ZIP files.
  */
-public class Extractor {
+public class ArchiveHandler {
 
     // A map that associates ZipHandler instances with their corresponding passwords.
     private final Map<String, ZipHandler> handlers = new HashMap<>();
 
 
     /**
-     * Constructor for the ZipExtractor class.
+     * Constructor for the ArchiveExtractor class.
      * Initializes handlers for specific passwords.
      */
-    public Extractor() {
-        handlers.put("pipiskamanakonja", new VictusZipHandlerAbstract());
-        handlers.put("Tokio$%Server12", new CombinedZipHandlerAbstract());
+    public ArchiveHandler() {
+        handlers.put("pipiskamanakonja", new VictusFileHandler());
+        handlers.put("Tokio$%Server12", new CombinedFileHandler());
     }
 
-    /** for Mocking?!? 2023-06-03
+    /**
      * This method is used to add a new handler to the handlers Map.
      * Each handler is responsible for handling a specific type of ZIP file
      * and is associated with a password that is used to decrypt the ZIP file.
@@ -42,12 +42,12 @@ public class Extractor {
      *
      * @param bytes    the bytes of the ZIP file to be extracted.
      * @param password the password for the ZIP file.
+     * @param contentType the content type of the ZIP file.
      * @throws IOException if an I/O error occurs.
      */
     public void extractZip(byte[] bytes, String password, String contentType) throws IOException {
         // Creation of a temporary file and writing the bytes to it.
-        // MultipartFile file = new MultipartFile();
-        File tempZipFile = File.createTempFile( contentType + "_extractZip", ".zip");
+        File tempZipFile = File.createTempFile(contentType + "_extractZip", ".zip");
         try (FileOutputStream fos = new FileOutputStream(tempZipFile)) {
             fos.write(bytes);
         }
@@ -56,16 +56,12 @@ public class Extractor {
         try {
             ZipHandler handler = handlers.get(password);
             if (handler != null) {
-                handler.handleZip(tempZipFile, ZipHandlerAbstract.TEMP_DIR_PATH, password.toCharArray());
+                handler.handleZip(tempZipFile, FileHandler.TEMP_DIR_PATH, password.toCharArray());
             } else {
                 throw new IllegalArgumentException("No handler for password " + password);
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }   //finally {
-            // Ensuring the deletion of the temporary ZIP file.
-            //if (!tempZipFile.delete()) {
-            // tempZipFile.deleteOnExit();
-            //}
+        }
     }
 }
