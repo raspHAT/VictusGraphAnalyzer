@@ -1,7 +1,7 @@
 package testJava;
 
-import com.rasphat.zipExtractor.Extractor;
-import com.rasphat.zipExtractor.ZipHandler;
+import com.rasphat.archiveExtractor.Extractor;
+import com.rasphat.archiveExtractor.ZipHandler;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;

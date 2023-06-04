@@ -1,4 +1,4 @@
-package com.rasphat.zipExtractor;
+package com.rasphat.archiveExtractor;
 
 import net.lingala.zip4j.exception.ZipException;
 
@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.ZipInputStream;
 
-public abstract class FileHandler {
+public abstract class AbstractHandler {
 
     // The directory path to where the ZIP files are extracted temporarily.
     public static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "extractZip" + File.separator;

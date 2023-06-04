@@ -1,13 +1,13 @@
-package com.rasphat.zipExtractor;
+package com.rasphat.archiveExtractor;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
- * The ZipHandler interface defines the operations that must be implemented
+ * The ArchiveHandler interface defines the operations that must be implemented
  * by classes that handle specific types of ZIP files.
  */
-public interface ZipHandler {
+public interface ArchiveHandler {
 
     /**
      * Handles a given ZIP file.

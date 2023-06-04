@@ -1,26 +1,23 @@
-package com.rasphat.zipExtractor;
+package com.rasphat.archiveExtractor;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 import java.io.File;
 
-/**
- * The VictusZipHandler class handles extraction of ZIP files with Victus encryption.
- */
-class VictusFileHandler extends FileHandler implements ZipHandler {
+class CombinedAbstractHandler extends AbstractHandler implements ArchiveHandler {
 
     /**
-     * Handles a given ZIP file with Victus encryption.
+     * Handles the extraction of a ZIP file.
      *
-     * @param file     the ZIP file to be handled.
-     * @param path     the path where the ZIP file should be extracted.
-     * @param password the password to be used to decrypt the ZIP file, if encrypted.
+     * @param file     the file representing the ZIP file.
+     * @param path     the destination path for extracting the ZIP file contents.
+     * @param password the password for the ZIP file (if encrypted).
      */
     @Override
     public void handleZip(File file, String path, char[] password) {
         if (file == null || !isZipFile(file)) {
-            System.out.println("File is null, or is no zipfile");
+            System.out.println("File is null, or is not a valid ZIP file");
             return;
         }
 

@@ -1,4 +1,4 @@
-package com.rasphat.zipExtractor;
+package com.rasphat.archiveExtractor;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,19 +9,19 @@ import java.util.Map;
 /**
  * The ArchiveExtractor class is responsible for extracting ZIP files.
  */
-public class ArchiveHandler {
+public class ArchiveExtractor {
 
-    // A map that associates ZipHandler instances with their corresponding passwords.
-    private final Map<String, ZipHandler> handlers = new HashMap<>();
+    // A map that associates ArchiveHandler instances with their corresponding passwords.
+    private final Map<String, ArchiveHandler> handlers = new HashMap<>();
 
 
     /**
      * Constructor for the ArchiveExtractor class.
      * Initializes handlers for specific passwords.
      */
-    public ArchiveHandler() {
-        handlers.put("pipiskamanakonja", new VictusFileHandler());
-        handlers.put("Tokio$%Server12", new CombinedFileHandler());
+    public ArchiveExtractor() {
+        handlers.put("pipiskamanakonja", new VictusAbstractHandler());
+        handlers.put("Tokio$%Server12", new CombinedAbstractHandler());
     }
 
     /**
@@ -30,10 +30,10 @@ public class ArchiveHandler {
      * and is associated with a password that is used to decrypt the ZIP file.
      *
      * @param password A string that represents the password to decrypt the ZIP file.
-     * @param handler An instance of a class that implements the ZipHandler interface.
+     * @param handler An instance of a class that implements the ArchiveHandler interface.
      *                This handler will be used whenever a ZIP file encrypted with the provided password is encountered.
      */
-    public void addHandler(String password, ZipHandler handler) {
+    public void addHandler(String password, ArchiveHandler handler) {
         handlers.put(password, handler);
     }
 
@@ -54,9 +54,9 @@ public class ArchiveHandler {
 
         // Handling and extraction of the ZIP file.
         try {
-            ZipHandler handler = handlers.get(password);
+            ArchiveHandler handler = handlers.get(password);
             if (handler != null) {
-                handler.handleZip(tempZipFile, FileHandler.TEMP_DIR_PATH, password.toCharArray());
+                handler.handleZip(tempZipFile, AbstractHandler.TEMP_DIR_PATH, password.toCharArray());
             } else {
                 throw new IllegalArgumentException("No handler for password " + password);
             }
