@@ -11,9 +11,9 @@ import java.io.File;
 /**
  * The VictusZipHandler class handles extraction of ZIP files with Victus encryption.
  */
-class VictusAbstractHandler extends AbstractHandler implements ArchiveHandler {
+class VictusHandler extends AbstractHandler implements ArchiveHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(VictusAbstractHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(VictusHandler.class);
 
     /**
      * Handles a given ZIP file with Victus encryption.

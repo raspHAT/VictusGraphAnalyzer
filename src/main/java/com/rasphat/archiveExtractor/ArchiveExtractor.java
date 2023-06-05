@@ -25,7 +25,7 @@ public class ArchiveExtractor {
      * Initializes handlers for specific passwords.
      */
     public ArchiveExtractor() {
-        handlers.put("pipiskamanakonja", new VictusAbstractHandler());
+        handlers.put("pipiskamanakonja", new VictusHandler());
         handlers.put("Tokio$%Server12", new CombinedHandler());
     }
 
