@@ -1,8 +1,5 @@
 package com.rasphat.archiveExtractor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -19,5 +16,5 @@ public interface ZipHandler {
      * @param password the password to be used to decrypt the ZIP file, if encrypted.
      * @throws IOException if an I/O error occurs.
      */
-    void handleZip(File file, String path, char[] password) throws IOException;
+    void archiveHandler(File file, String path, char[] password) throws IOException;
 }

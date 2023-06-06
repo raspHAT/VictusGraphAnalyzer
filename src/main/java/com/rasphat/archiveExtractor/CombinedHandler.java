@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-class CombinedHandler extends AbstractHandler implements ZipHandler {
+class CombinedHandler extends AbstractHandler {
     private static final Logger logger = LoggerFactory.getLogger(CombinedHandler.class);
     /**
      * Handles the extraction of a ZIP file.
@@ -17,7 +17,7 @@ class CombinedHandler extends AbstractHandler implements ZipHandler {
      * @param password the password for the ZIP file (if encrypted).
      */
     @Override
-    public void handleZip(File file, String path, char[] password) {
+    public void archiveHandler(File file, String path, char[] password) {
         if (file == null || !isZipFile(file)) {
             logger.debug("File is null, or is not a valid ZIP file");
             return;

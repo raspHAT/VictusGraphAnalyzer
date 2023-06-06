@@ -10,13 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The ArchiveExtractor class is responsible for extracting ZIP files.
+ * The ArchiveExtractor class is responsible for extracting archive files.
  */
 public class ArchiveExtractor {
 
     private static final Logger logger = LoggerFactory.getLogger(ArchiveExtractor.class);
 
-    // A map that associates ArchiveHandler instances with their corresponding passwords.
+    // A map that associates ZipHandler instances with their corresponding passwords.
     private final Map<String, ZipHandler> handlers = new HashMap<>();
 
 
@@ -61,7 +61,7 @@ public class ArchiveExtractor {
         try {
             ZipHandler handler = handlers.get(password);
             if (handler != null) {
-                handler.handleZip(tempZipFile, AbstractHandler.TEMP_DIR_PATH, password.toCharArray());
+                handler.archiveHandler(tempZipFile, AbstractHandler.TEMP_DIR_PATH, password.toCharArray());
             } else {
                 throw new IllegalArgumentException("No handler for password " + password);
             }

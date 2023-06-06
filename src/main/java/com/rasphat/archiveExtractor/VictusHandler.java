@@ -11,7 +11,7 @@ import java.io.File;
 /**
  * The VictusZipHandler class handles extraction of ZIP files with Victus encryption.
  */
-class VictusHandler extends AbstractHandler implements ZipHandler {
+class VictusHandler extends AbstractHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(VictusHandler.class);
 
@@ -23,7 +23,7 @@ class VictusHandler extends AbstractHandler implements ZipHandler {
      * @param password the password to be used to decrypt the ZIP file, if encrypted.
      */
     @Override
-    public void handleZip(File file, String path, char[] password) {
+    public void archiveHandler(File file, String path, char[] password) {
         if (file == null || !isZipFile(file)) {
             logger.info("File is null, or is no zipfile");
             return;

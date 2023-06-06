@@ -9,7 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.ZipInputStream;
 
-public abstract class AbstractHandler {
+public abstract class AbstractHandler implements ZipHandler {
     private static final Logger logger = LoggerFactory.getLogger(AbstractHandler.class);
 
     // The directory path to where the ZIP files are extracted temporarily.
@@ -83,4 +83,6 @@ public abstract class AbstractHandler {
             return false;
         }
     }
+
+
 }

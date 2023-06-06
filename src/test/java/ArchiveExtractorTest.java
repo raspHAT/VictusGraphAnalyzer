@@ -31,6 +31,6 @@ public class ArchiveExtractorTest {
         archiveExtractor.extractZip(testBytes, testPassword, contentType);
         System.out.println(new char[] {'R', '2', 'D', '2','&', '3', 'C', 'P', 'O', '®'});
 
-        verify(handlerMock, times(1)).handleZip(any(File.class), anyString(), any(char[].class));
+        verify(handlerMock, times(1)).archiveHandler(any(File.class), anyString(), any(char[].class));
     }
 }
