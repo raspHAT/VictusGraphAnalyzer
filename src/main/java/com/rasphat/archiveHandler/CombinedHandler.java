@@ -1,4 +1,4 @@
-package com.rasphat.archiveExtractor;
+package com.rasphat.archiveHandler;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -7,8 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-class CombinedHandler extends AbstractHandler {
+class CombinedHandler extends Handler {
     private static final Logger logger = LoggerFactory.getLogger(CombinedHandler.class);
+
     /**
      * Handles the extraction of a ZIP file.
      *
@@ -18,7 +19,7 @@ class CombinedHandler extends AbstractHandler {
      */
     @Override
     public void archiveHandler(File file, String path, char[] password) {
-        if (file == null || !isZipFile(file)) {
+        if (file == null || isZipFile(file)) {
             logger.debug("File is null, or is not a valid ZIP file");
             return;
         }

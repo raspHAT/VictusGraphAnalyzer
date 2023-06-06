@@ -1,4 +1,4 @@
-package com.rasphat.archiveExtractor;
+package com.rasphat.archiveHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +12,9 @@ import java.util.Map;
 /**
  * The ArchiveExtractor class is responsible for extracting archive files.
  */
-public class ArchiveExtractor {
+public class extractionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(ArchiveExtractor.class);
+    private static final Logger logger = LoggerFactory.getLogger(extractionHandler.class);
 
     // A map that associates ZipHandler instances with their corresponding passwords.
     private final Map<String, ZipHandler> handlers = new HashMap<>();
@@ -24,7 +24,7 @@ public class ArchiveExtractor {
      * Constructor for the ArchiveExtractor class.
      * Initializes handlers for specific passwords.
      */
-    public ArchiveExtractor() {
+    public extractionHandler() {
         handlers.put("pipiskamanakonja", new VictusHandler());
         handlers.put("Tokio$%Server12", new CombinedHandler());
     }
@@ -61,7 +61,7 @@ public class ArchiveExtractor {
         try {
             ZipHandler handler = handlers.get(password);
             if (handler != null) {
-                handler.archiveHandler(tempZipFile, AbstractHandler.TEMP_DIR_PATH, password.toCharArray());
+                handler.archiveHandler(tempZipFile, Handler.TEMP_DIR_PATH, password.toCharArray());
             } else {
                 throw new IllegalArgumentException("No handler for password " + password);
             }

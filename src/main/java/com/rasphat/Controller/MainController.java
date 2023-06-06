@@ -1,6 +1,6 @@
 package com.rasphat.Controller;
 
-import com.rasphat.archiveExtractor.ArchiveExtractor;
+import com.rasphat.archiveHandler.extractionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -26,11 +26,11 @@ public class MainController {
                 logger.info(file.getContentType());
                 String contentType = file.getContentType();
 
-                ArchiveExtractor archiveExtractor = new ArchiveExtractor();
+                extractionHandler extractionHandler = new extractionHandler();
                 // VICTUS
                 //extractor.extractZip(bytes,"pipiskamanakonja", contentType);
                 // TENEO and ZDW3
-                archiveExtractor.extractZip(bytes,"Tokio$%Server12", contentType);
+                extractionHandler.extractZip(bytes,"Tokio$%Server12", contentType);
 
                 // Führe hier die gewünschte Verarbeitung mit der Datei im Arbeitsspeicher aus
                 // ...

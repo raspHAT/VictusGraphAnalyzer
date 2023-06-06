@@ -1,4 +1,4 @@
-package com.rasphat.archiveExtractor;
+package com.rasphat.archiveHandler;
 
 import java.io.File;
 import java.io.IOException;

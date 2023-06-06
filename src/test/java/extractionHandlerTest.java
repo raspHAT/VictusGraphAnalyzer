@@ -1,8 +1,8 @@
 // No package due to missing directory depth.
 // If a package is required, move the file to a location deeper in the file system.
 
-import com.rasphat.archiveExtractor.ArchiveExtractor;
-import com.rasphat.archiveExtractor.ZipHandler;
+import com.rasphat.archiveHandler.extractionHandler;
+import com.rasphat.archiveHandler.ZipHandler;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,15 +11,15 @@ import static org.mockito.Mockito.*;
 import java.io.File;
 import java.io.IOException;
 
-public class ArchiveExtractorTest {
-    private ArchiveExtractor archiveExtractor;
+public class extractionHandlerTest {
+    private extractionHandler extractionHandler;
     private ZipHandler handlerMock;
 
     @BeforeEach
     public void setUp() {
         handlerMock = mock(ZipHandler.class);
-        archiveExtractor = new ArchiveExtractor();
-        archiveExtractor.addHandler("mockPassword", handlerMock);
+        extractionHandler = new extractionHandler();
+        extractionHandler.addHandler("mockPassword", handlerMock);
     }
 
     @Test
@@ -28,7 +28,7 @@ public class ArchiveExtractorTest {
         String testPassword = "mockPassword";
 
         String contentType = null;
-        archiveExtractor.extractZip(testBytes, testPassword, contentType);
+        extractionHandler.extractZip(testBytes, testPassword, contentType);
         System.out.println(new char[] {'R', '2', 'D', '2','&', '3', 'C', 'P', 'O', '®'});
 
         verify(handlerMock, times(1)).archiveHandler(any(File.class), anyString(), any(char[].class));
