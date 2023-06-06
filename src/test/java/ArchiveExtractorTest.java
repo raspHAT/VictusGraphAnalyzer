@@ -2,7 +2,7 @@
 // If a package is required, move the file to a location deeper in the file system.
 
 import com.rasphat.archiveExtractor.ArchiveExtractor;
-import com.rasphat.archiveExtractor.ArchiveHandler;
+import com.rasphat.archiveExtractor.ZipHandler;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,11 +13,11 @@ import java.io.IOException;
 
 public class ArchiveExtractorTest {
     private ArchiveExtractor archiveExtractor;
-    private ArchiveHandler handlerMock;
+    private ZipHandler handlerMock;
 
     @BeforeEach
     public void setUp() {
-        handlerMock = mock(ArchiveHandler.class);
+        handlerMock = mock(ZipHandler.class);
         archiveExtractor = new ArchiveExtractor();
         archiveExtractor.addHandler("mockPassword", handlerMock);
     }

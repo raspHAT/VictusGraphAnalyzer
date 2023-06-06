@@ -17,7 +17,7 @@ public class ArchiveExtractor {
     private static final Logger logger = LoggerFactory.getLogger(ArchiveExtractor.class);
 
     // A map that associates ArchiveHandler instances with their corresponding passwords.
-    private final Map<String, ArchiveHandler> handlers = new HashMap<>();
+    private final Map<String, ZipHandler> handlers = new HashMap<>();
 
 
     /**
@@ -38,7 +38,7 @@ public class ArchiveExtractor {
      * @param handler An instance of a class that implements the ArchiveHandler interface.
      *                This handler will be used whenever a ZIP file encrypted with the provided password is encountered.
      */
-    public void addHandler(String password, ArchiveHandler handler) {
+    public void addHandler(String password, ZipHandler handler) {
         handlers.put(password, handler);
     }
 
@@ -59,7 +59,7 @@ public class ArchiveExtractor {
 
         // Handling and extraction of the ZIP file.
         try {
-            ArchiveHandler handler = handlers.get(password);
+            ZipHandler handler = handlers.get(password);
             if (handler != null) {
                 handler.handleZip(tempZipFile, AbstractHandler.TEMP_DIR_PATH, password.toCharArray());
             } else {

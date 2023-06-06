@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-class CombinedHandler extends AbstractHandler implements ArchiveHandler {
+class CombinedHandler extends AbstractHandler implements ZipHandler {
     private static final Logger logger = LoggerFactory.getLogger(CombinedHandler.class);
     /**
      * Handles the extraction of a ZIP file.

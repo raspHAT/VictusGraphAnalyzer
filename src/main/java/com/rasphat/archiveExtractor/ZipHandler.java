@@ -10,7 +10,7 @@ import java.io.IOException;
  * The ArchiveHandler interface defines the operations that must be implemented
  * by classes that handle specific types of ZIP files.
  */
-public interface ArchiveHandler {
+public interface ZipHandler {
     /**
      * Handles a given ZIP file.
      *
