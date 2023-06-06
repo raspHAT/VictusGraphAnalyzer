@@ -1,7 +1,7 @@
 // No package due to missing directory depth.
 // If a package is required, move the file to a location deeper in the file system.
 
-import com.rasphat.archiveHandler.extractionHandler;
+import com.rasphat.archiveHandler.ExtractionHandler;
 import com.rasphat.archiveHandler.ZipHandler;
 
 import org.junit.jupiter.api.Test;
@@ -12,13 +12,13 @@ import java.io.File;
 import java.io.IOException;
 
 public class extractionHandlerTest {
-    private extractionHandler extractionHandler;
+    private ExtractionHandler extractionHandler;
     private ZipHandler handlerMock;
 
     @BeforeEach
     public void setUp() {
         handlerMock = mock(ZipHandler.class);
-        extractionHandler = new extractionHandler();
+        extractionHandler = new ExtractionHandler();
         extractionHandler.addHandler("mockPassword", handlerMock);
     }
 

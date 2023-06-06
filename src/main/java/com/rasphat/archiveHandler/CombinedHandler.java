@@ -29,8 +29,11 @@ class CombinedHandler extends Handler {
             if (zipFile.isEncrypted()) {
                 zipFile.setPassword(password);
             }
+            logger.info("Extraction starts!");
             zipFile.extractAll(path);
+            logger.info("Extraction finishes!");
         } catch (ZipException e) {
+            System.out.println("I have the longest ...");
             handleException(e);
         }
     }

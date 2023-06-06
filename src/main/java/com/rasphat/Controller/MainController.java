@@ -1,6 +1,6 @@
 package com.rasphat.Controller;
 
-import com.rasphat.archiveHandler.extractionHandler;
+import com.rasphat.archiveHandler.ExtractionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -26,7 +26,7 @@ public class MainController {
                 logger.info(file.getContentType());
                 String contentType = file.getContentType();
 
-                extractionHandler extractionHandler = new extractionHandler();
+                ExtractionHandler extractionHandler = new ExtractionHandler();
                 // VICTUS
                 //extractor.extractZip(bytes,"pipiskamanakonja", contentType);
                 // TENEO and ZDW3

@@ -12,9 +12,9 @@ import java.util.Map;
 /**
  * The ArchiveExtractor class is responsible for extracting archive files.
  */
-public class extractionHandler {
+public class ExtractionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(extractionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExtractionHandler.class);
 
     // A map that associates ZipHandler instances with their corresponding passwords.
     private final Map<String, ZipHandler> handlers = new HashMap<>();
@@ -24,7 +24,7 @@ public class extractionHandler {
      * Constructor for the ArchiveExtractor class.
      * Initializes handlers for specific passwords.
      */
-    public extractionHandler() {
+    public ExtractionHandler() {
         handlers.put("pipiskamanakonja", new VictusHandler());
         handlers.put("Tokio$%Server12", new CombinedHandler());
     }
