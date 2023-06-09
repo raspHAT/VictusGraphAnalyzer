@@ -28,9 +28,9 @@ public class MainController {
 
                 ExtractionHandler extractionHandler = new ExtractionHandler();
                 // VICTUS
-                //extractor.extractZip(bytes,"pipiskamanakonja", contentType);
+                extractionHandler.extractZip(bytes,"pipiskamanakonja", contentType);
                 // TENEO and ZDW3
-                extractionHandler.extractZip(bytes,"Tokio$%Server12", contentType);
+                // extractionHandler.extractZip(bytes,"Tokio$%Server12", contentType);
 
                 // Führe hier die gewünschte Verarbeitung mit der Datei im Arbeitsspeicher aus
                 // ...
