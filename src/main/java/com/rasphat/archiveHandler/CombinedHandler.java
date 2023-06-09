@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-class CombinedHandler extends Handler {
+public class CombinedHandler extends Handler {
     private static final Logger logger = LoggerFactory.getLogger(CombinedHandler.class);
 
     /**

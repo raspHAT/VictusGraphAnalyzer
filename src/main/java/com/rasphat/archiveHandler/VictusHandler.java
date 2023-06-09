@@ -10,7 +10,7 @@ import java.io.File;
 /**
  * The VictusZipHandler class handles extraction of ZIP files with Victus encryption.
  */
-class VictusHandler extends Handler {
+public class VictusHandler extends Handler {
 
     private static final Logger logger = LoggerFactory.getLogger(VictusHandler.class);
 
