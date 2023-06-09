@@ -5,22 +5,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.zip.ZipInputStream;
 
 public abstract class Handler implements ZipHandler {
+
     private static final Logger logger = LoggerFactory.getLogger(Handler.class);
 
     // The directory path to where the ZIP files are extracted temporarily.
     public static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "extractZip" + File.separator;
-
-    private static final String WRONG_PASSWORD_MSG = "File is from type 'ZIP' but password is wrong!";
-    private static final String CORRUPT_FILE_MSG = "Most likely: Corrupt file, or not from type Victus!";
-
-
-
-
 
 
     /**
@@ -52,6 +46,7 @@ public abstract class Handler implements ZipHandler {
      */
     public void handleException(ZipException e) {
         if (e.getType() == ZipException.Type.WRONG_PASSWORD) {
+            String WRONG_PASSWORD_MSG = "File is from type 'ZIP' but password is wrong!";
             logger.info(WRONG_PASSWORD_MSG);
             logger.debug(e.getType().toString());
             logger.debug(e.getMessage() + "Message");
@@ -62,6 +57,7 @@ public abstract class Handler implements ZipHandler {
 
             e.printStackTrace();
         } else {
+            String CORRUPT_FILE_MSG = "Most likely: Corrupt file, or not from type Victus!";
             logger.info(CORRUPT_FILE_MSG);
             e.printStackTrace();
         }
@@ -83,8 +79,7 @@ public abstract class Handler implements ZipHandler {
      * @return true if the file is a valid ZIP file, false otherwise.
      */
     protected boolean isZipFile(File file) {
-        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
-            System.out.println(zipInputStream);
+        try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(file.toPath()))) {
             return zipInputStream.getNextEntry() != null;
         } catch (IOException e) {
             return false;
