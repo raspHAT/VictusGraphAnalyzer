@@ -12,6 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class MainController {
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
+
+
+
     @GetMapping("/")
     public String index() {
         return "index.html";
