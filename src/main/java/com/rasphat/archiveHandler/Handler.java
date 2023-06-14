@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.zip.ZipInputStream;
 
@@ -15,6 +16,9 @@ public abstract class Handler implements ZipHandler {
 
     // The directory path to where the ZIP files are extracted temporarily.
     public static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "extractZip" + File.separator;
+
+    protected Handler() throws {
+    }
 
 
     /**
@@ -38,6 +42,10 @@ public abstract class Handler implements ZipHandler {
             throw new IOException("Failed to delete " + directoryToBeDeleted);
         }
     }
+
+    //String handlerString = properties.getProperty("zipHandler.victus");
+    //Handler victusHandler = HandlerFactory.createHandler(handlerString);
+
 
     /**
      * Handles a given ZipException.
