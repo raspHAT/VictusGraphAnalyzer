@@ -5,16 +5,26 @@ import java.lang.reflect.InvocationTargetException;
 
 public class HandlerFactory {
 
-    public static Handler createHandler(String handlerString) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public static Handler createHandler(String handlerString) {
+        if (handlerString == null || handlerString.isEmpty()) {
+            throw new IllegalArgumentException("Handler string cannot be null or empty");
+        }
 
-        // Dynamisch Klasse laden
-        Class<?> handlerClass = Class.forName(handlerString);
+        try {
+            // Dynamisch Klasse laden
+            Class<?> handlerClass = Class.forName(handlerString);
 
-        // Standard-Konstruktor abrufen
-        Constructor<?> constructor = handlerClass.getDeclaredConstructor();
+            // Überprüfen, ob der Klasse einen Standard-Konstruktor hat
+            Constructor<?> constructor = handlerClass.getDeclaredConstructor();
+            if (!constructor.isAccessible()) {
+                throw new IllegalArgumentException("Handler class must have a public default constructor");
+            }
 
-        // Instanz der Klasse erstellen
-
-        return (Handler) constructor.newInstance();
+            // Instanz der Klasse erstellen
+            return (Handler) constructor.newInstance();
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
