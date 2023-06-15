@@ -3,6 +3,8 @@ package com.rasphat.archiveHandler;
 import net.lingala.zip4j.exception.ZipException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,12 +12,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.zip.ZipInputStream;
 
+
+
 public abstract class Handler implements ZipHandler {
+
+
 
     private static final Logger logger = LoggerFactory.getLogger(Handler.class);
 
     // The directory path to where the ZIP files are extracted temporarily.
     public static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "extractZip" + File.separator;
+
+
+
 
 
     /**

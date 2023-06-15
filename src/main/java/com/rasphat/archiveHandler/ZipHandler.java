@@ -8,6 +8,7 @@ import java.io.IOException;
  * by classes that handle specific types of ZIP files.
  */
 public interface ZipHandler {
+
     /**
      * Handles a given ZIP file.
      *

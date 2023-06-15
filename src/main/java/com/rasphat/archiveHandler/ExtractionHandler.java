@@ -1,18 +1,34 @@
 package com.rasphat.archiveHandler;
 
+import com.rasphat.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * The ArchiveExtractor class is responsible for extracting archive files.
  */
 public class ExtractionHandler {
+
+    public static String handlerVictus = null;
+
+    static {
+        Properties properties = new Properties();
+        try (InputStream input = Main.class.getClassLoader().getResourceAsStream("application.properties")) {
+            properties.load(input);
+            handlerVictus = properties.getProperty("app.handlerVictus");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private static final Logger logger = LoggerFactory.getLogger(ExtractionHandler.class);
 
@@ -20,12 +36,16 @@ public class ExtractionHandler {
     private final Map<String, ZipHandler> handlers = new HashMap<>();
 
 
+
+
+
     /**
      * Constructor for the ArchiveExtractor class.
      * Initializes handlers for specific passwords.
      */
     public ExtractionHandler() {
-        handlers.put("pipiskamanakonja", new VictusHandler());
+        System.out.println(handlerVictus);
+        handlers.put("pipiskamanakonja", HandlerFactory.createHandler(handlerVictus));
         handlers.put("Tokio$%Server12", new CombinedHandler());
     }
 
