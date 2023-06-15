@@ -19,18 +19,19 @@ public class ExtractionHandler {
 
     public static String handlerVictus = null;
 
+    private static final Logger logger = LoggerFactory.getLogger(ExtractionHandler.class);
     static {
         Properties properties = new Properties();
         try (InputStream input = Main.class.getClassLoader().getResourceAsStream("application.properties")) {
             properties.load(input);
             handlerVictus = properties.getProperty("app.handlerVictus");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error loading properties", e);
+            throw new RuntimeException("Could not load application.properties", e);
         }
     }
 
 
-    private static final Logger logger = LoggerFactory.getLogger(ExtractionHandler.class);
 
     // A map that associates ZipHandler instances with their corresponding passwords.
     private final Map<String, ZipHandler> handlers = new HashMap<>();
