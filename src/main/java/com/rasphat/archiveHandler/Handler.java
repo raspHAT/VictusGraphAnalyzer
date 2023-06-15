@@ -17,9 +17,6 @@ public abstract class Handler implements ZipHandler {
     // The directory path to where the ZIP files are extracted temporarily.
     public static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "extractZip" + File.separator;
 
-    protected Handler() throws {
-    }
-
 
     /**
      * Deletes the extracted data and its directory.
