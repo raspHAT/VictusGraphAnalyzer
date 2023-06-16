@@ -2,9 +2,11 @@ package com.rasphat.archiveHandler;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import com.rasphat.archiveHandler.VictusHandler;
 
 public class HandlerFactory {
 
+    private static final String packagePath = "com.rasphat.archiveHandler.";
     /**
      * Creates an instance of a Handler subclass.
      *
@@ -14,7 +16,9 @@ public class HandlerFactory {
      * doesn't have a public default constructor.
      */
 
-    public static Handler createHandler(String handlerString) {
+    public static ZipHandler createHandler(String handlerString) {
+
+
 
         if (handlerString == null || handlerString.isEmpty()) {
             throw new IllegalArgumentException("Handler string cannot be null or empty");
@@ -22,7 +26,9 @@ public class HandlerFactory {
 
         try {
             // Dynamically load the class
-            Class<?> handlerClass = Class.forName(handlerString);
+            String fullClassPath = packagePath+ handlerString;
+            System.out.println(fullClassPath);
+            Class<?> handlerClass = Class.forName(fullClassPath);
 
             // Check if the class has a default constructor
             Constructor<?> constructor = handlerClass.getDeclaredConstructor();
@@ -31,7 +37,7 @@ public class HandlerFactory {
             }
 
             // Create an instance of the class
-            return (Handler) constructor.newInstance();
+            return (ZipHandler) constructor.newInstance();
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             e.printStackTrace();
             return null;
