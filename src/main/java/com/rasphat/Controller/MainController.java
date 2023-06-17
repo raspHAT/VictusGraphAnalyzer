@@ -21,13 +21,19 @@ public class MainController {
     }
 
     @PostMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile file) {
+    public String upload(@RequestParam("project") String project,
+                         @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             try {
                 // Hier wird die Dateiverarbeitung durchgeführt
                 byte[] bytes = file.getBytes();
                 logger.info(file.getContentType());
+                logger.info("Markus Project!!!! "+project);
                 String contentType = file.getContentType();
+
+                // Hier soll die HAndlerFactory aufgerufen werden. Diese bekommt als Parameter
+                // ein file Object und ein project String
+                // In der Factory wird die Temp Datei erzeugt und anhand des Projektes
 
                 ExtractionHandler extractionHandler = new ExtractionHandler();
                 // VICTUS
@@ -40,6 +46,7 @@ public class MainController {
                 return "redirect:/success";
             } catch (Exception e) {
                 // Fehlerbehandlung, falls ein Fehler beim Hochladen oder der Verarbeitung auftritt
+                logger.info(String.valueOf(e));
                 return "redirect:/error";
             }
         } else {

@@ -72,6 +72,7 @@ public class ExtractionHandler {
      * @throws IOException if an I/O error occurs.
      */
     public void extractZip(byte[] bytes, String password, String contentType) throws IOException {
+
         // Creation of a temporary file and writing the bytes to it.
         File tempZipFile = File.createTempFile(contentType + "_extractZip", ".zip");
         try (FileOutputStream fos = new FileOutputStream(tempZipFile)) {

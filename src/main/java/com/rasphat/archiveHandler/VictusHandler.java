@@ -14,6 +14,10 @@ public class VictusHandler extends Handler {
 
     private static final Logger logger = LoggerFactory.getLogger(VictusHandler.class);
 
+    public VictusHandler() {
+        System.out.println("Constructor VictusHandler");
+    }
+
     /**
      * Handles a given ZIP file with Victus encryption.
      *

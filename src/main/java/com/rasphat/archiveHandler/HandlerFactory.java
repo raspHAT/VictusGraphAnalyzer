@@ -4,7 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import com.rasphat.archiveHandler.VictusHandler;
 
-public class HandlerFactory {
+public abstract class HandlerFactory {
 
     private static final String packagePath = "com.rasphat.archiveHandler.";
     /**
@@ -32,9 +32,9 @@ public class HandlerFactory {
 
             // Check if the class has a default constructor
             Constructor<?> constructor = handlerClass.getDeclaredConstructor();
-            if (!constructor.isAccessible()) {
+/*            if (!constructor.isAccessible()) {
                 throw new IllegalArgumentException("Handler class must have a public default constructor");
-            }
+            }*/
 
             // Create an instance of the class
             return (ZipHandler) constructor.newInstance();
