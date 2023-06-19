@@ -1,4 +1,4 @@
-import com.rasphat.Controller.MainController;
+import com.rasphat.controller.MainController;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;

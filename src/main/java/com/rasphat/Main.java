@@ -34,24 +34,7 @@ public class Main {
      */
     public static void main(String[] args) {
         logger.info("Application initializing...");
-        configure();
         SpringApplication.run(Main.class);
         logger.info("Application runs and runs and runs");
-    }
-
-    private static void configure() {
-        Properties properties = new Properties();
-
-        try (InputStream input = Main.class.getClassLoader().getResourceAsStream("application.properties")) {
-            properties.load(input);
-
-            // Read the configuration values
-            String dbUrl = properties.getProperty("db.url");
-            String dbUsername = properties.getProperty("db.username");
-            String dbPassword = properties.getProperty("db.password");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

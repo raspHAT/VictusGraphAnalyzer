@@ -1,5 +1,6 @@
-package com.rasphat.archiveHandler;
+package com.rasphat.data.factories.extractor.factory.concrete;
 
+import com.rasphat.data.factories.extractor.factory.abstracts.Handler;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.slf4j.Logger;

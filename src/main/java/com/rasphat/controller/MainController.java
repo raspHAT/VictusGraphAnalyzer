@@ -1,6 +1,6 @@
-package com.rasphat.Controller;
+package com.rasphat.controller;
 
-import com.rasphat.archiveHandler.ExtractionHandler;
+import com.rasphat.data.factories.extractor.factory.concrete.ExtractionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;

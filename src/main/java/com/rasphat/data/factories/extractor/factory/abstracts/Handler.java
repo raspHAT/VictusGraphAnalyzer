@@ -1,14 +1,12 @@
-package com.rasphat.archiveHandler;
+package com.rasphat.data.factories.extractor.factory.abstracts;
 
+import com.rasphat.data.factories.extractor.factory.interfaces.ZipHandler;
 import net.lingala.zip4j.exception.ZipException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.zip.ZipInputStream;
 

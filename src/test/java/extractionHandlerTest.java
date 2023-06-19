@@ -1,8 +1,8 @@
 // No package due to missing directory depth.
 // If a package is required, move the file to a location deeper in the file system.
 
-import com.rasphat.archiveHandler.ExtractionHandler;
-import com.rasphat.archiveHandler.ZipHandler;
+import com.rasphat.data.factories.extractor.factory.concrete.ExtractionHandler;
+import com.rasphat.data.factories.extractor.factory.interfaces.ZipHandler;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;

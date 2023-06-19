@@ -1,4 +1,4 @@
-package com.rasphat.archiveHandler;
+package com.rasphat.data.factories.extractor.factory.interfaces;
 
 import java.io.File;
 import java.io.IOException;

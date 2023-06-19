@@ -1,8 +1,9 @@
-package com.rasphat.archiveHandler;
+package com.rasphat.data.factories.extractor.factory.abstracts;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import com.rasphat.archiveHandler.VictusHandler;
+
+import com.rasphat.data.factories.extractor.factory.interfaces.ZipHandler;
 
 public abstract class HandlerFactory {
 

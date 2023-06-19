@@ -1,4 +1,4 @@
-package com.rasphat.data.factories.interfaces;
+package com.rasphat.data.factories.extractor.factory.interfaces;
 
 import org.springframework.web.multipart.MultipartFile;
 

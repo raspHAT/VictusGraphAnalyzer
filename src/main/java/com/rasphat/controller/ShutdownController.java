@@ -1,4 +1,4 @@
-package com.rasphat.Controller;
+package com.rasphat.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
