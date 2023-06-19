@@ -21,8 +21,9 @@ public class MainController {
     }
 
     @PostMapping("/upload")
-    public String upload(@RequestParam("project") String project,
-                         @RequestParam("file") MultipartFile file) {
+    public String upload(
+            @RequestParam("project") String project,
+            @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             try {
                 // Hier wird die Dateiverarbeitung durchgeführt
