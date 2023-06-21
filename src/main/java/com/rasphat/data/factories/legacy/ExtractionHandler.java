@@ -1,9 +1,6 @@
-package com.rasphat.data.factories.extractor.factory.concrete;
+package com.rasphat.data.factories.legacy;
 
 import com.rasphat.Main;
-import com.rasphat.data.factories.extractor.factory.abstracts.Handler;
-import com.rasphat.data.factories.extractor.factory.abstracts.HandlerFactory;
-import com.rasphat.data.factories.extractor.factory.interfaces.ZipHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

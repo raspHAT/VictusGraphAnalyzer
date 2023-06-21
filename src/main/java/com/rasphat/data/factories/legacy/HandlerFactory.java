@@ -1,9 +1,7 @@
-package com.rasphat.data.factories.extractor.factory.abstracts;
+package com.rasphat.data.factories.legacy;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-
-import com.rasphat.data.factories.extractor.factory.interfaces.ZipHandler;
 
 public abstract class HandlerFactory {
 

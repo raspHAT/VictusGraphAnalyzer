@@ -1,4 +1,4 @@
-package com.rasphat.data.factories.extractor.factory.enums;
+package com.rasphat.data.factories.upload.factory;
 
 public enum FileType {
     VICTUS,

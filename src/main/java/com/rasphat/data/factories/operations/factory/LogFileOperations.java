@@ -1,4 +1,4 @@
-package com.rasphat.data.factories.operations.factory.interfaces;
+package com.rasphat.data.factories.operations.factory;
 
 public interface LogFileOperations {
     void copyFile(String sourcePath, String destinationPath);

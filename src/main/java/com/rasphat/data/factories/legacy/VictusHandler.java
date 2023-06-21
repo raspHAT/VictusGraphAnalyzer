@@ -1,6 +1,5 @@
-package com.rasphat.data.factories.extractor.factory.concrete;
+package com.rasphat.data.factories.legacy;
 
-import com.rasphat.data.factories.extractor.factory.abstracts.Handler;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.slf4j.Logger;

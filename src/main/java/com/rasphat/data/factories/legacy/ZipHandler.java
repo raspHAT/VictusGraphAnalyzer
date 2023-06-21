@@ -1,4 +1,4 @@
-package com.rasphat.data.factories.extractor.factory.interfaces;
+package com.rasphat.data.factories.legacy;
 
 import java.io.File;
 import java.io.IOException;
