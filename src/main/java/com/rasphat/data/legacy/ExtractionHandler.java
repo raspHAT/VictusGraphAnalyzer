@@ -1,4 +1,4 @@
-package com.rasphat.data.factories.legacy;
+package com.rasphat.data.legacy;
 
 import com.rasphat.Main;
 import org.slf4j.Logger;

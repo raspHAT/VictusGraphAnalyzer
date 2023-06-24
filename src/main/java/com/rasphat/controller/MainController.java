@@ -1,6 +1,9 @@
 package com.rasphat.controller;
 
-import com.rasphat.data.factories.legacy.ExtractionHandler;
+import com.rasphat.data.legacy.ExtractionHandler;
+import com.rasphat.data.portfolio.Portfolio;
+import com.rasphat.data.upload.Upload;
+import com.rasphat.data.upload.UploadData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -26,32 +29,18 @@ public class MainController {
             @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             try {
-                // Hier wird die Dateiverarbeitung durchgeführt
-                byte[] bytes = file.getBytes();
-                logger.info(file.getContentType());
-                logger.info("Markus Project!!!! "+project);
-                String contentType = file.getContentType();
 
-                // Hier soll die HAndlerFactory aufgerufen werden. Diese bekommt als Parameter
-                // ein file Object und ein project String
-                // In der Factory wird die Temp Datei erzeugt und anhand des Projektes
 
-                ExtractionHandler extractionHandler = new ExtractionHandler();
-                // VICTUS
-                extractionHandler.extractZip(bytes,"pipiskamanakonja", contentType);
-                // TENEO and ZDW3
-                // extractionHandler.extractZip(bytes,"Tokio$%Server12", contentType);
+                UploadData uploadData = new Upload().processUploadData(project, file);
+                Portfolio portfolio = new Portfolio(uploadData);
+                System.out.println(portfolio);
 
-                // Führe hier die gewünschte Verarbeitung mit der Datei im Arbeitsspeicher aus
-                // ...
                 return "redirect:/success";
             } catch (Exception e) {
-                // Fehlerbehandlung, falls ein Fehler beim Hochladen oder der Verarbeitung auftritt
                 logger.info(String.valueOf(e));
                 return "redirect:/error";
             }
         } else {
-            // Fehlerbehandlung, wenn die hochgeladene Datei leer ist
             return "redirect:/error";
         }
     }

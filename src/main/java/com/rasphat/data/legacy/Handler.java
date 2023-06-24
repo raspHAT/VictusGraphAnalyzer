@@ -1,4 +1,4 @@
-package com.rasphat.data.factories.legacy;
+package com.rasphat.data.legacy;
 
 import net.lingala.zip4j.exception.ZipException;
 import org.slf4j.Logger;

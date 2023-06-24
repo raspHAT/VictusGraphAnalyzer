@@ -1,4 +1,4 @@
-package com.rasphat.data.factories.legacy;
+package com.rasphat.data.legacy;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

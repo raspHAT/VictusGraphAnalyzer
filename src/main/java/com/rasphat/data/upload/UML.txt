@@ -1,0 +1,37 @@
+MainController: {
+  shape: class
+  style: {
+    border-radius: 5
+  }
+  + processFile(): (String project, MultipartFile file)
+}
+
+ServiceFactory: {
+  shape: class
+  style: {
+    border-radius: 5
+  }
+  + createService(): Service
+  + reader(): io.RuneReader
+}
+
+UploadProcessor: {
+  shape: class
+  style: {
+    border-radius: 5
+  }
+  label: <<interface>> UploadProcessor
+  processFile(String  project, MultipartFile file)
+}
+
+AbstractUploadProcessor: {
+  shape: class
+  style: {
+    border-radius: 5
+  }
+  label: AbstractUploadProcessor (abstract)
+  "# setFileContent(Upload upload, MultipartFile file)"
+}
+
+MainController -> AbstractUploadProcessor
+UploadProcessor -> AbstractUploadProcessor
