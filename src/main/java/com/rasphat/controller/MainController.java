@@ -1,6 +1,5 @@
 package com.rasphat.controller;
 
-import com.rasphat.data.legacy.ExtractionHandler;
 import com.rasphat.data.portfolio.Portfolio;
 import com.rasphat.data.upload.Upload;
 import com.rasphat.data.upload.UploadData;
@@ -16,8 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class MainController {
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-
-
     @GetMapping("/")
     public String index() {
         return "index.html";
@@ -29,12 +26,9 @@ public class MainController {
             @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             try {
-
-
                 UploadData uploadData = new Upload().processUploadData(project, file);
                 Portfolio portfolio = new Portfolio(uploadData);
                 System.out.println(portfolio);
-
                 return "redirect:/success";
             } catch (Exception e) {
                 logger.info(String.valueOf(e));
@@ -55,5 +49,3 @@ public class MainController {
         return "success.html";
     }
 }
-
-
