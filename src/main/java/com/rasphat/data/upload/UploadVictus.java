@@ -4,7 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 
-public class TeneoTreatments implements UploadProcessor {
+public class UploadVictus implements UploadProcessor {
 
     private final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
 

@@ -68,7 +68,7 @@ public abstract class Handler implements ZipHandler {
 
             e.printStackTrace();
         } else {
-            String CORRUPT_FILE_MSG = "Most likely: Corrupt file, or not from type Victus!";
+            String CORRUPT_FILE_MSG = "Most likely: Corrupt file, or not from type UploadVictus!";
             logger.info(CORRUPT_FILE_MSG);
             e.printStackTrace();
         }

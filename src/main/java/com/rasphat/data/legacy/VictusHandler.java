@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 
 /**
- * The VictusZipHandler class handles extraction of ZIP files with Victus encryption.
+ * The VictusZipHandler class handles extraction of ZIP files with UploadVictus encryption.
  */
 public class VictusHandler extends Handler {
 
@@ -19,7 +19,7 @@ public class VictusHandler extends Handler {
     }
 
     /**
-     * Handles a given ZIP file with Victus encryption.
+     * Handles a given ZIP file with UploadVictus encryption.
      *
      * @param file     the ZIP file to be handled.
      * @param path     the path where the ZIP file should be extracted.
