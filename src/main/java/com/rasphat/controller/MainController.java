@@ -26,8 +26,8 @@ public class MainController {
             @RequestParam("file") MultipartFile file) {
         if (!file.isEmpty()) {
             try {
-                UploadData uploadData = new Upload().processUploadData(project, file);
-                Portfolio portfolio = new Portfolio(uploadData);
+                Upload upload = new Upload(project, file);
+                Portfolio portfolio = new Portfolio(upload);
                 System.out.println(portfolio);
                 return "redirect:/success";
             } catch (Exception e) {
