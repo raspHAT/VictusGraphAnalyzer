@@ -24,15 +24,17 @@
     <form method="post" action="/upload" enctype="multipart/form-data">
 
         <select name="project" id="projectSelect">
-            <option value="victus">Victus</option>
-            <option value="teneo">Teneo</option>
-            <option value="zdw3">ZDW3</option>
+            <option value="VICTUS">Victus</option>
+            <option value="TENEO">Teneo</option>
+            <option value="TENEO_TREATMENTS">ZDW3</option>
+            <option value="ZDW3">ZDW3</option>
         </select>
 
         <br>
         <input type="file" name="file" id="fileInput" class="file-input">
         <button type="submit">Upload</button>
         <a href="/success">Success</a>
+        <a href="/error">Error</a>
     </form>
 
 </main>

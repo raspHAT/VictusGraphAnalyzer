@@ -5,6 +5,7 @@ import com.rasphat.data.upload.Upload;
 import com.rasphat.data.upload.UploadData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-public class MainController {
+public class MainController implements ErrorController {  // use interface ErrorController, so the given error.html file will be redirected from /error page !
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
     @GetMapping("/")
@@ -27,8 +28,9 @@ public class MainController {
         if (!file.isEmpty()) {
             try {
                 Upload upload = new Upload(project, file);
-                Portfolio portfolio = new Portfolio(upload);
-                System.out.println(portfolio);
+
+                System.out.println(upload);
+
                 return "redirect:/success";
             } catch (Exception e) {
                 logger.info(String.valueOf(e));
@@ -40,12 +42,14 @@ public class MainController {
     }
 
     @GetMapping("/success")
-    public String uploadSuccess() {
+    public String success() {
         return "success.html";
     }
 
     @GetMapping("/error")
-    public String uploadError() {
-        return "success.html";
+    public String error() {
+        return "error.html";
     }
+
+
 }

@@ -42,17 +42,6 @@ button[type="submit"]:hover {
     display: none;
 }
 
-/*.file-label span::after {
-    content: attr(data-file-name);
-    margin-left: 10px;
-}*/
-
-/*.file-input-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px; *//* Hinzugefügt, um den Abstand zum Button beizubehalten *//*
-}*/
-
 .button-container {
     display: flex;
     align-items: center;
