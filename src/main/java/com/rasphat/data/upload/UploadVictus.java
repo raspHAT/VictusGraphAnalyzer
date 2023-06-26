@@ -1,13 +1,11 @@
 package com.rasphat.data.upload;
 
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -33,8 +31,9 @@ public class UploadVictus extends Upload implements UploadProcessor {
             File tempZipFile = File.createTempFile("upload", ".zip");
             multipartFile.transferTo(tempZipFile);
 
-            if (!isZipFile(tempZipFile)) {
-                logger.info("File is null or is not a zipfile");
+            // file is not
+            if (!isValidZipFile(tempZipFile)) {
+                logger.info("Not a zip file");
                 return;
             }
 
@@ -45,7 +44,7 @@ public class UploadVictus extends Upload implements UploadProcessor {
             zipFile.extractAll(TEMP_DIR_PATH);
 
             // Clean up the temporary file
-            System.out.println(tempZipFile.delete());
+            System.out.println(tempZipFile.delete()+" File deleted!!!");
         } catch (IOException e) {
             logger.error("Error extracting zip file: " + e.getMessage());
         }

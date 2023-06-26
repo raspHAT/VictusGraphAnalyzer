@@ -1,28 +1,38 @@
 package com.rasphat.data.upload;
 
 import com.rasphat.Main;
-
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.model.FileHeader;
+import net.lingala.zip4j.exception.ZipException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.List;
+import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.Properties;
-import java.util.zip.ZipInputStream;
 
 public abstract class Upload {
 
-    public static UploadProcessor getUploadProcessor(String project) {
+    private static final Logger logger = LoggerFactory.getLogger(Upload.class);
 
-        if (project.equals(UploadType.VICTUS.name())) {
-            return new UploadVictus();
-        } else if (project.equals(UploadType.TENEO.name())) {
-            return new UploadTeneo();
-        } else if (project.equals(UploadType.ZDW3.name())) {
-            return new UploadZdw3();
-        } else if (project.equals(UploadType.TENEO_TREATMENTS.name())) {
-            return new UploadTeneoTreatments();
-        } else {
-            throw new IllegalArgumentException("Unsupported project: " + project);
+    public static UploadProcessor getUploadProcessor(String project) {
+        try {
+            if (project.equals(UploadType.VICTUS.name())) {
+                return new UploadVictus();
+            } else if (project.equals(UploadType.TENEO.name())) {
+                return new UploadTeneo();
+            } else if (project.equals(UploadType.ZDW3.name())) {
+                return new UploadZdw3();
+            } else if (project.equals(UploadType.TENEO_TREATMENTS.name())) {
+                return new UploadTeneoTreatments();
+            } else {
+                logger.debug("Unsupported project: " + project);
+                return null; // or you can throw an exception here
+            }
+        } catch (Exception e) { // You need to specify what kind of Exception you're catching
+            logger.error("Error processing upload for project " + project, e);
+            return null; // or you can rethrow the exception depending on your use case
         }
     }
 
@@ -39,17 +49,40 @@ public abstract class Upload {
     }
 
     /**
-     * Checks if the provided file is a valid ZIP file.
+     * This function checks whether the provided file is a valid ZIP file.
      *
-     * @param file the file to be checked.
-     * @return true if the file is a valid ZIP file, false otherwise.
+     * It tries to read the file using Zip4j library. During the reading process,
+     * it iterates over each entry in the ZIP file. If the entry is encrypted,
+     * it logs a debug message indicating that the file is encrypted. If the entry
+     * is not encrypted, it logs a message indicating that it is not encrypted.
+     *
+     * If the function is able to read all entries in the ZIP file without any errors,
+     * it concludes that the file is a valid ZIP file and returns true.
+     *
+     * If it encounters an error during the reading process (a ZipException is thrown),
+     * it logs a debug message indicating that the file is not a valid ZIP file and returns false.
+     *
+     * @param file - The file to check.
+     * @return boolean - true if the file is a valid ZIP file, false otherwise.
      */
-    protected boolean isZipFile(File file) {
-        try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(file.toPath()))) {
-            return zipInputStream.getNextEntry() != null;
-        } catch (IOException e) {
-            return false;
-        }
-    }
+    protected boolean isValidZipFile(File file) {
+        try {
+            ZipFile zipFile = new ZipFile(file);
+            List<FileHeader> fileHeaders = zipFile.getFileHeaders();
 
+            for(FileHeader fileHeader : fileHeaders) {
+                if (fileHeader.isEncrypted()) {
+                    logger.debug(fileHeader.getFileName() + " zip file is encrypted.");
+                } else {
+                    logger.debug(fileHeader.getFileName() + " zip file is not encrypted.");
+                }
+            }
+            // If we got to this point without an exception being thrown, the file is a valid ZIP file
+            return true;
+        } catch (ZipException ex) {
+            logger.debug(file + " is not a valid ZIP file.");
+        }
+        // If an exception was thrown, the file is not a valid ZIP file
+        return false;
+    }
 }

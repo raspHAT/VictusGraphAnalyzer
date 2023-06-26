@@ -1,6 +1,5 @@
 package com.rasphat.controller;
 
-import com.rasphat.data.portfolio.Portfolio;
 import com.rasphat.data.upload.Upload;
 import com.rasphat.data.upload.UploadData;
 import com.rasphat.data.upload.UploadProcessor;
@@ -16,7 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Controller
-public class MainController implements ErrorController {  // use interface ErrorController, so the given error.html file will be redirected from /error page !
+public class MainController implements ErrorController {
+    // The class implements the ErrorController interface.
+    // This allows it to handle error navigation, and will redirect to the provided 'error.html'
+    // file when the /error path is accessed.
+
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
     @GetMapping("/")
@@ -27,12 +30,13 @@ public class MainController implements ErrorController {  // use interface Error
     @PostMapping("/upload")
     public String upload(
             @RequestParam("project") String project,
-            @RequestParam("file") MultipartFile file) {
-        if (!file.isEmpty()) {
-            try {
+            @RequestParam("multipartFile") MultipartFile multipartFile) {
 
+        if (multipartFile != null && !multipartFile.isEmpty() && project != null && !project.isEmpty()) {
+            try {
                 UploadProcessor uploadProcessor = Upload.getUploadProcessor(project);
-                List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
+                assert uploadProcessor != null;
+                List<UploadData> uploadDataList = uploadProcessor.processUploadData(multipartFile);
                 return "redirect:/success";
 
             } catch (Exception e) {
