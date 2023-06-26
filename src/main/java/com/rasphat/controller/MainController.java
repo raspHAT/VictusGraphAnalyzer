@@ -30,13 +30,13 @@ public class MainController implements ErrorController {
     @PostMapping("/upload")
     public String upload(
             @RequestParam("project") String project,
-            @RequestParam("multipartFile") MultipartFile multipartFile) {
+            @RequestParam("file") MultipartFile file) {
 
-        if (multipartFile != null && !multipartFile.isEmpty() && project != null && !project.isEmpty()) {
+        if (file != null && !file.isEmpty() && project != null && !project.isEmpty()) {
             try {
                 UploadProcessor uploadProcessor = Upload.getUploadProcessor(project);
                 assert uploadProcessor != null;
-                List<UploadData> uploadDataList = uploadProcessor.processUploadData(multipartFile);
+                List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
                 return "redirect:/success";
 
             } catch (Exception e) {
