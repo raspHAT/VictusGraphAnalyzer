@@ -20,6 +20,7 @@ public class ExtractionHandler {
     public static String handlerVictus = null;
 
     private static final Logger logger = LoggerFactory.getLogger(ExtractionHandler.class);
+
     static {
         Properties properties = new Properties();
         try (InputStream input = Main.class.getClassLoader().getResourceAsStream("application.properties")) {
