@@ -29,29 +29,25 @@ public class UploadVictus extends Upload implements UploadProcessor {
     }
 
     public void extractZip(MultipartFile multipartFile, String password) {
-
         try {
-            File tempZipFile = File.createTempFile(TEMP_DIR_PATH + "upload", ".zip");
-            FileOutputStream fos = new FileOutputStream(tempZipFile);
-            fos.write(multipartFile.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            File tempZipFile = File.createTempFile("upload", ".zip");
+            multipartFile.transferTo(tempZipFile);
 
+            if (!isZipFile(tempZipFile)) {
+                logger.info("File is null or is not a zipfile");
+                return;
+            }
 
-        if (isZipFile((File) multipartFile)) {
-            logger.info("File is null, or is no zipfile");
-            return;
-        }
-
-        try {
-            ZipFile zipFile = new ZipFile((File) multipartFile);
+            ZipFile zipFile = new ZipFile(tempZipFile);
             if (zipFile.isEncrypted()) {
                 zipFile.setPassword(password.toCharArray());
             }
             zipFile.extractAll(TEMP_DIR_PATH);
-        } catch (ZipException e) {
-            logger.info(e.toString());
+
+            // Clean up the temporary file
+            System.out.println(tempZipFile.delete());
+        } catch (IOException e) {
+            logger.error("Error extracting zip file: " + e.getMessage());
         }
     }
 }
