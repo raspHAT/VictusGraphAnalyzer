@@ -29,7 +29,7 @@ public abstract class Upload {
             } else if (project.equals(UploadType.TENEO_TREATMENTS.name())) {
                 return new UploadTeneoTreatments();
             } else {
-                logger.debug("Unsupported project: " + project);
+                logger.info("Unsupported project: " + project);
                 return new UploadProjectUnknown(); // or you can throw an exception here
             }
         } catch (Exception e) { // You need to specify what kind of Exception you're catching
