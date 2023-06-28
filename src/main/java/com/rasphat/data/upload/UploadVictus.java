@@ -11,40 +11,39 @@ import java.util.List;
 
 public class UploadVictus extends Upload implements UploadProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(UploadVictus.class);
+    private final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
+    private final Logger logger = LoggerFactory.getLogger(UploadVictus.class);
     private final String NAME_OF_PROPERTY = "app."+UploadType.VICTUS.name();
 
     @Override
     public List<UploadData> processUploadData(MultipartFile multipartFile) {
 
-        String password = getPasswordFromProperty(NAME_OF_PROPERTY);
-
-        extractZip(multipartFile, password);
+        extractZip(multipartFile, getPasswordFromProperty(NAME_OF_PROPERTY));
 
         System.out.println(TEMP_DIR_PATH);
-        System.out.println("VICTUS PASSWORD: "+ password);
+        System.out.println("VICTUS PASSWORD: "+ getPasswordFromProperty(NAME_OF_PROPERTY));
         return null;
     }
 
-    public void extractZip(MultipartFile multipartFile, String password) {
+    private void extractZip(MultipartFile multipartFile, String password) {
         try {
-            File tempZipFile = File.createTempFile("upload", ".zip");
-            multipartFile.transferTo(tempZipFile);
+            //File tempZipFile = File.createTempFile("upload", ".zip");
+            //multipartFile.transferTo(tempZipFile);
 
             // file is not
-            if (!isValidZipFile(tempZipFile)) {
+            if (!isValidZipFile((File) multipartFile)) {
                 logger.info("Not a zip file");
                 return;
             }
 
-            ZipFile zipFile = new ZipFile(tempZipFile);
+            ZipFile zipFile = new ZipFile((File) multipartFile);
             if (zipFile.isEncrypted()) {
                 zipFile.setPassword(password.toCharArray());
             }
             zipFile.extractAll(TEMP_DIR_PATH);
 
             // Clean up the temporary file
-            System.out.println(tempZipFile.delete()+" File deleted!!!");
+            System.out.println(((File) multipartFile).delete()+" File deleted!!!");
         } catch (IOException e) {
             logger.error("Error extracting zip file: " + e.getMessage());
         }

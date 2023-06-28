@@ -3,6 +3,7 @@ package com.rasphat.controller;
 import com.rasphat.data.upload.Upload;
 import com.rasphat.data.upload.UploadData;
 import com.rasphat.data.upload.UploadProcessor;
+import com.rasphat.data.upload.UploadVictus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -34,9 +35,12 @@ public class MainController implements ErrorController {
 
         if (file != null && !file.isEmpty() && project != null && !project.isEmpty()) {
             try {
+
                 UploadProcessor uploadProcessor = Upload.getUploadProcessor(project);
-                assert uploadProcessor != null;
-                List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
+
+                if (uploadProcessor != null) {
+                    List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
+                }
                 return "redirect:/success";
 
             } catch (Exception e) {

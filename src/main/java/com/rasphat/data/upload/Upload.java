@@ -15,6 +15,8 @@ import java.io.InputStream;
 public abstract class Upload {
 
     private static final Logger logger = LoggerFactory.getLogger(Upload.class);
+    private final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
+
 
     public static UploadProcessor getUploadProcessor(String project) {
         try {
@@ -37,15 +39,15 @@ public abstract class Upload {
     }
 
     protected String getPasswordFromProperty(String nameOfProperty) {
-        String passwordVictus;
+        String password;
         Properties properties = new Properties();
         try (InputStream input = Main.class.getClassLoader().getResourceAsStream("application.properties")) {
             properties.load(input);
-            passwordVictus = properties.getProperty(nameOfProperty);
+            password = properties.getProperty(nameOfProperty);
         } catch (IOException e) {
             throw new RuntimeException("Could not load application.properties", e);
         }
-        return passwordVictus;
+        return password;
     }
 
     /**
