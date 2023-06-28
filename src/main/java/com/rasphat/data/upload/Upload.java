@@ -15,7 +15,7 @@ import java.io.InputStream;
 public abstract class Upload {
 
     private static final Logger logger = LoggerFactory.getLogger(Upload.class);
-    private final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
+    //private final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
 
 
     public static UploadProcessor getUploadProcessor(String project) throws Exception {
@@ -33,7 +33,6 @@ public abstract class Upload {
                 return new UploadProjectUnknown(); // or you can throw an exception here
             }
         } catch (Exception e) { // You need to specify what kind of Exception you're catching
-            logger.error("Error processing upload for project " + project, e);
             throw new Exception("Error processing upload for project " + project, e); // or you can rethrow the exception depending on your use case
         }
     }
@@ -82,7 +81,7 @@ public abstract class Upload {
             // If we got to this point without an exception being thrown, the file is a valid ZIP file
             return true;
         } catch (ZipException ex) {
-            logger.debug(file + " is not a valid ZIP file.");
+            logger.error(file + " is not a valid ZIP file.");
         }
         // If an exception was thrown, the file is not a valid ZIP file
         return false;
