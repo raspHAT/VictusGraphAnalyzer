@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UploadVictus extends Upload implements UploadProcessor {
@@ -18,11 +19,13 @@ public class UploadVictus extends Upload implements UploadProcessor {
     @Override
     public List<UploadData> processUploadData(MultipartFile multipartFile) {
 
+        List<UploadData> uploadDataList = new ArrayList<>();
+
         extractZip(multipartFile, getPasswordFromProperty(NAME_OF_PROPERTY));
 
         System.out.println(TEMP_DIR_PATH);
         System.out.println("VICTUS PASSWORD: "+ getPasswordFromProperty(NAME_OF_PROPERTY));
-        return null;
+        return uploadDataList;
     }
 
     private void extractZip(MultipartFile multipartFile, String password) {

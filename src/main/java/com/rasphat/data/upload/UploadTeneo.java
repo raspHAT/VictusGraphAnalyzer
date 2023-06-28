@@ -3,6 +3,7 @@ package com.rasphat.data.upload;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UploadTeneo extends Upload implements UploadProcessor {
@@ -14,10 +15,12 @@ public class UploadTeneo extends Upload implements UploadProcessor {
     @Override
     public List<UploadData> processUploadData(MultipartFile multipartFile) {
 
+        List<UploadData> uploadDataList = new ArrayList<>();
+
         String password = getPasswordFromProperty(NAME_OF_PROPERTY);
 
         System.out.println(TEMP_DIR_PATH);
         System.out.println("TENEO PASSWORD: "+ password);
-        return null;
+        return uploadDataList;
     }
 }

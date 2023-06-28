@@ -4,5 +4,6 @@ public enum UploadType {
     VICTUS,
     TENEO,
     ZDW3,
-    TENEO_TREATMENTS
+    TENEO_TREATMENTS,
+    UNKNOWN
 }

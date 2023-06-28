@@ -38,13 +38,11 @@ public class MainController implements ErrorController {
 
                 UploadProcessor uploadProcessor = Upload.getUploadProcessor(project);
 
-                if (uploadProcessor != null) {
-                    List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
-                }
+                List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
                 return "redirect:/success";
 
             } catch (Exception e) {
-                logger.info(String.valueOf(e));
+                logger.info(e.getMessage());
                 return "redirect:/error";
             }
         } else {

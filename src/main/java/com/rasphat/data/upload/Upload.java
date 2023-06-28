@@ -18,7 +18,7 @@ public abstract class Upload {
     private final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
 
 
-    public static UploadProcessor getUploadProcessor(String project) {
+    public static UploadProcessor getUploadProcessor(String project) throws Exception {
         try {
             if (project.equals(UploadType.VICTUS.name())) {
                 return new UploadVictus();
@@ -30,11 +30,11 @@ public abstract class Upload {
                 return new UploadTeneoTreatments();
             } else {
                 logger.debug("Unsupported project: " + project);
-                return null; // or you can throw an exception here
+                return new UploadProjectUnknown(); // or you can throw an exception here
             }
         } catch (Exception e) { // You need to specify what kind of Exception you're catching
             logger.error("Error processing upload for project " + project, e);
-            return null; // or you can rethrow the exception depending on your use case
+            throw new Exception("Error processing upload for project " + project, e); // or you can rethrow the exception depending on your use case
         }
     }
 
