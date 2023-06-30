@@ -1,9 +1,6 @@
 package com.rasphat.controller;
 
-import com.rasphat.data.upload.Upload;
-import com.rasphat.data.upload.UploadData;
-import com.rasphat.data.upload.UploadProcessor;
-import com.rasphat.data.upload.UploadVictus;
+import com.rasphat.data.upload.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -21,7 +18,7 @@ public class MainController implements ErrorController {
     // This allows it to handle error navigation, and will redirect to the provided 'error.html'
     // file when the /error path is accessed.
 
-    private static final Logger logger = LoggerFactory.getLogger(MainController.class);
+    private final Logger logger = LoggerFactory.getLogger(MainController.class);
 
     @GetMapping("/")
     public String index() {
@@ -36,7 +33,8 @@ public class MainController implements ErrorController {
         if (file != null && !file.isEmpty() && project != null && !project.isEmpty()) {
             try {
 
-                UploadProcessor uploadProcessor = Upload.getUploadProcessor(project);
+                UploadFactory uploadFactory= new UploadFactory();
+                UploadProcessor uploadProcessor = uploadFactory.getUploadProcessor(project);
 
                 List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
                 return "redirect:/success";

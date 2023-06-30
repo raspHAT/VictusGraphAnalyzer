@@ -19,8 +19,6 @@ public class UploadZdw3 extends Upload implements UploadProcessor {
 
         String password = getPasswordFromProperty(NAME_OF_PROPERTY);
 
-        System.out.println(TEMP_DIR_PATH);
-        System.out.println("TENEO PASSWORD: "+ password);
         return uploadDataList;
     }
 }
