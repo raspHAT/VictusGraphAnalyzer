@@ -21,7 +21,9 @@ public class UploadFactory {
                 return new UploadProjectUnknown();
             }
         } catch (Exception e) { // You need to specify what kind of Exception you're catching
-            throw new Exception("Error processing upload for project " + project + " & " +  e + " from type: " + UploadType.UNKNOWN.name()); // or you can rethrow the exception depending on your use case
+            String errorMessage = "Error processing upload for project " + project + " & " +  e + " from type: " + UploadType.UNKNOWN.name();
+            logger.error(errorMessage);
+            throw new Exception(errorMessage);
         }
     }
 }
