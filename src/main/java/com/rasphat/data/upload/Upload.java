@@ -46,9 +46,8 @@ public abstract class Upload {
      * @param file The file to check.
      * @return True if the file is a valid ZIP file, false otherwise.
      */
-    protected boolean isValidZipFile(File file) {
-        try {
-            ZipFile zipFile = new ZipFile(file);
+    protected boolean isValidZipFile(File file) throws IOException {
+        try (ZipFile zipFile = new ZipFile(file)) {
             List<FileHeader> fileHeaders = zipFile.getFileHeaders();
 
             for (FileHeader fileHeader : fileHeaders) {
@@ -62,7 +61,7 @@ public abstract class Upload {
             // If we got to this point without an exception being thrown, the file is a valid ZIP file
             return true;
         } catch (ZipException ex) {
-            logger.error(file + " is not a valid ZIP file.");
+            logger.error(file + " is not a valid ZIP file. Exception message: " +ex.getMessage());
         }
 
         // If an exception was thrown, the file is not a valid ZIP file
