@@ -2,28 +2,35 @@ package com.rasphat.data.upload;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class UploadFactory {
 
     private final Logger logger = LoggerFactory.getLogger(UploadFactory.class);
 
-    public UploadProcessor getUploadProcessor(String project) throws Exception {
-        try {
-            if (project.equals(UploadType.VICTUS.name())) {
-                return new UploadVictus();
-            } else if (project.equals(UploadType.TENEO.name())) {
-                return new UploadTeneo();
-            } else if (project.equals(UploadType.ZDW3.name())) {
-                return new UploadZdw3();
-            } else if (project.equals(UploadType.TENEO_TREATMENTS.name())) {
-                return new UploadTeneoTreatments();
-            } else {
-                return new UploadProjectUnknown();
-            }
-        } catch (Exception e) { // You need to specify what kind of Exception you're catching
-            String errorMessage = "Error processing upload for project " + project + " & " +  e + " from type: " + UploadType.UNKNOWN.name();
-            logger.error(errorMessage);
-            throw new Exception(errorMessage);
+    /**
+     * Returns an appropriate UploadProcessor based on the specified project.
+     *
+     * @param project The project name for which the UploadProcessor is needed.
+     * @return An UploadProcessor instance corresponding to the project.
+     * @throws IllegalArgumentException If the argument contains no valid project!
+     */
+    public UploadProcessor getUploadProcessor(String project) throws IllegalArgumentException {
+
+        Map<String, Supplier<UploadProcessor>> processorMap = new HashMap<>();
+        processorMap.put(UploadType.VICTUS.name().toLowerCase(), UploadVictus::new);
+        processorMap.put(UploadType.TENEO.name().toLowerCase(), UploadTeneo::new);
+        processorMap.put(UploadType.ZDW3.name().toLowerCase(), UploadZdw3::new);
+        processorMap.put(UploadType.TENEO_TREATMENTS.name().toLowerCase(), UploadTeneoTreatments::new);
+
+        Supplier<UploadProcessor> processorSupplier = processorMap.get(project.toLowerCase());
+        if (processorSupplier != null) {
+            return processorSupplier.get();
+        } else {
+            logger.error("Unsupported project: " + project);
+            throw new IllegalArgumentException("Unsupported project: " + project);
         }
     }
 }

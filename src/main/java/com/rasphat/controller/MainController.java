@@ -1,15 +1,20 @@
 package com.rasphat.controller;
 
-import com.rasphat.data.upload.*;
+import com.rasphat.data.upload.UploadData;
+import com.rasphat.data.upload.UploadFactory;
+import com.rasphat.data.upload.UploadProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
@@ -19,6 +24,9 @@ public class MainController implements ErrorController {
     // file when the /error path is accessed.
 
     private final Logger logger = LoggerFactory.getLogger(MainController.class);
+
+    @Autowired
+    private HttpServletRequest request;
 
     @GetMapping("/")
     public String index() {
@@ -35,8 +43,17 @@ public class MainController implements ErrorController {
 
                 UploadFactory uploadFactory= new UploadFactory();
                 UploadProcessor uploadProcessor = uploadFactory.getUploadProcessor(project);
-
                 List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
+
+                System.out.println(uploadDataList.size());
+                System.out.println(uploadDataList.get(1));
+                System.out.println(uploadDataList.get(uploadDataList.size()-1));
+                System.out.println(uploadDataList.get((uploadDataList.size()-1)/2));
+                logger.info("Upload successfully!");
+
+                // Vor dem Zurückgeben der success.html-Seite
+                request.setAttribute("uploadDataList", uploadDataList);
+
                 return "redirect:/success";
 
             } catch (Exception e) {
@@ -46,6 +63,12 @@ public class MainController implements ErrorController {
         } else {
             return "redirect:/error";
         }
+    }
+
+    @GetMapping("/success-page")
+    public String success(Model model) {
+        model.addAttribute("uploadDataList", request.getAttribute("uploadDataList"));
+        return "success.html";
     }
 
     @GetMapping("/success")

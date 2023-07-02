@@ -8,9 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -19,8 +18,10 @@ import java.util.Properties;
  */
 public abstract class Upload {
 
-    private final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
+    protected final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
     private final Logger logger = LoggerFactory.getLogger(Upload.class);
+    private String project = "";
+    protected List<UploadData> uploadDataList = new ArrayList<>();
 
     /**
      * Retrieves the password from the application.properties file based on the given property name.
@@ -29,6 +30,7 @@ public abstract class Upload {
      * @return The value of the property.
      */
     protected String getPasswordFromProperty(String nameOfProperty) {
+        project = nameOfProperty;
         String password;
         Properties properties = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("application.properties")) {
@@ -142,4 +144,43 @@ public abstract class Upload {
             logger.error("Error deleting temporary directory: " + e.getMessage());
         }
     }
+
+    protected List<UploadData> processFiles() throws IOException {
+        List<UploadData> uploadDataList = new ArrayList<>();
+        processDirectory(new File(TEMP_DIR_PATH), uploadDataList);
+        return uploadDataList;
+    }
+
+
+    protected void processDirectory(File directory, List<UploadData> uploadDataList) throws IOException {
+        File[] files = directory.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    processFile(file, uploadDataList);
+                } else if (file.isDirectory()) {
+                    processDirectory(file, uploadDataList);
+                }
+            }
+        }
+    }
+
+    protected void processFile(File file, List<UploadData> uploadDataList) throws IOException {
+
+        String filename = file.getName();
+
+        if (filename.equals("VictusGraphAnalyzer.zip")) {
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                UploadData uploadData = new UploadData(filename, line, project);
+                uploadDataList.add(uploadData);
+            }
+        }
+    }
+
 }
