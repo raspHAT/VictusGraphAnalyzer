@@ -19,9 +19,9 @@ import java.util.Properties;
 public abstract class Upload {
 
     protected final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
+    protected List<UploadData> uploadDataList = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(Upload.class);
     private String project = "";
-    protected List<UploadData> uploadDataList = new ArrayList<>();
 
     /**
      * Retrieves the password from the application.properties file based on the given property name.
@@ -47,6 +47,7 @@ public abstract class Upload {
      *
      * @param file The file to check.
      * @return True if the file is a valid ZIP file, false otherwise.
+     * @throws IOException If an I/O error occurs.
      */
     protected boolean isValidZipFile(File file) throws IOException {
         try (ZipFile zipFile = new ZipFile(file)) {
@@ -63,7 +64,7 @@ public abstract class Upload {
             // If we got to this point without an exception being thrown, the file is a valid ZIP file
             return true;
         } catch (ZipException ex) {
-            logger.error(file + " is not a valid ZIP file. Exception message: " +ex.getMessage());
+            logger.error(file + " is not a valid ZIP file. Exception message: " + ex.getMessage());
         }
 
         // If an exception was thrown, the file is not a valid ZIP file
@@ -145,13 +146,25 @@ public abstract class Upload {
         }
     }
 
+    /**
+     * Processes the files in the temporary directory and returns a list of UploadData objects.
+     *
+     * @return The list of UploadData objects.
+     * @throws IOException If an I/O error occurs.
+     */
     protected List<UploadData> processFiles() throws IOException {
         List<UploadData> uploadDataList = new ArrayList<>();
         processDirectory(new File(TEMP_DIR_PATH), uploadDataList);
         return uploadDataList;
     }
 
-
+    /**
+     * Recursively processes the files in the given directory and adds the UploadData objects to the provided list.
+     *
+     * @param directory        The directory to process.
+     * @param uploadDataList   The list to add the UploadData objects to.
+     * @throws IOException     If an I/O error occurs.
+     */
     protected void processDirectory(File directory, List<UploadData> uploadDataList) throws IOException {
         File[] files = directory.listFiles();
 
@@ -166,6 +179,13 @@ public abstract class Upload {
         }
     }
 
+    /**
+     * Processes a file and creates an UploadData object for each line in the file.
+     *
+     * @param file             The file to process.
+     * @param uploadDataList   The list to add the UploadData objects to.
+     * @throws IOException     If an I/O error occurs.
+     */
     protected void processFile(File file, List<UploadData> uploadDataList) throws IOException {
 
         String filename = file.getName();
@@ -182,5 +202,4 @@ public abstract class Upload {
             }
         }
     }
-
 }
