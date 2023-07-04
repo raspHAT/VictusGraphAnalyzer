@@ -1,5 +1,6 @@
 package com.rasphat.controller;
 
+import com.rasphat.data.portfolio.DateParser;
 import com.rasphat.data.upload.UploadData;
 import com.rasphat.data.upload.UploadFactory;
 import com.rasphat.data.upload.UploadProcessor;
@@ -12,13 +13,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
 public class MainController implements ErrorController {
-    // The class implements the ErrorController interface.
-    // This allows it to handle error navigation, and will redirect to the provided 'error.html'
-    // file when the /error path is accessed.
+
+    /**
+     * The MainController class serves as a controller component in Spring Framework.
+     * It implements the ErrorController interface, which is a part of Spring Boot.
+     * The ErrorController interface provides a mechanism to handle errors and
+     * customize error pages in the application.
+     * By implementing the ErrorController interface, the MainController
+     * takes on the responsibility of handling error navigation.
+     * Whenever an error occurs, the MainController will be invoked to handle it.
+     * In this specific case, when the /error path is accessed, the MainController
+     * redirects to an error.html file. This file contains the customized content
+     * that will be presented to the user when an error occurs.
+     */
 
     private final Logger logger = LoggerFactory.getLogger(MainController.class);
 
@@ -40,12 +52,29 @@ public class MainController implements ErrorController {
                 UploadProcessor uploadProcessor = uploadFactory.getUploadProcessor(project);
                 List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
 
+                for (UploadData inputList : uploadDataList) {
+                    if (!inputList.getFilename().contains("Screenshot.png")
+                    && !inputList.getFilename().contains("DS_Store"))
+                    {
+                        // Add your code here to process each list of UploadData
+                        LocalDateTime localDateTime = DateParser.findDateTimeInString(inputList.getRawLine());
+                        if ( localDateTime == null)
+                            System.out.println("Yippi: " + inputList.getRawLine() + " " + inputList.getFilename());;
+                    }
+                }
+
                 System.out.println(uploadDataList.size());
                 System.out.println(uploadDataList.get(1));
                 System.out.println(uploadDataList.get(uploadDataList.size()-1));
                 System.out.println(uploadDataList.get((uploadDataList.size()-1)/2));
                 logger.info("Upload successfully!");
 
+                /*
+                2022-04-30T02:18:10.702388+00:00 asc28 CAL: D: === OnPLCStateChanged 36 ===
+                    <td>Sat May  7 09:36:54 UTC 2022
+                05/06/2022 09:16:45.062  :)  t:14 (engine Camera.Motor) base::CameraBase.Dispose_(): Dispose
+                - <4/23/2022 07:50:10.934> ERROR: No swept source controller created.
+                */
 
                 return "redirect:/success";
 

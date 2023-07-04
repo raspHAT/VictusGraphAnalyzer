@@ -5,15 +5,15 @@ public class UploadData {
     private final String rawLine;
     private final String project;
 
-    private String getFilename() {
+    public String getFilename() {
         return filename;
     }
 
-    private String getRawLine() {
+    public String getRawLine() {
         return rawLine;
     }
 
-    private String getProject() {
+    public String getProject() {
         return project;
     }
 

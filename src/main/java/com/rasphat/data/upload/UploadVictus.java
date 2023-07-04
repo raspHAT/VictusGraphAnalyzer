@@ -25,7 +25,7 @@ public class UploadVictus extends Upload implements UploadProcessor {
             e.printStackTrace();
         }
 
-        deleteTempDirectory();
+        //deleteTempDirectory();
 
         return uploadDataList;
     }

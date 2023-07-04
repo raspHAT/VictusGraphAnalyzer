@@ -106,6 +106,7 @@ public abstract class Upload {
      */
     protected void createTempDirectory() throws IOException {
         File tempDirectory = new File(TEMP_DIR_PATH);
+        System.out.println(tempDirectory);
         if (!tempDirectory.exists()) {
             if (!tempDirectory.mkdirs()) {
                 logger.error("Failed to create directory: " + TEMP_DIR_PATH);
