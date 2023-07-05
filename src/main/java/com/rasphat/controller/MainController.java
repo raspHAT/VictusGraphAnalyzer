@@ -52,22 +52,26 @@ public class MainController implements ErrorController {
                 UploadProcessor uploadProcessor = uploadFactory.getUploadProcessor(project);
                 List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
 
-                for (UploadData inputList : uploadDataList) {
-                    if (!inputList.getFilename().contains("Screenshot.png")
-                    && !inputList.getFilename().contains("DS_Store"))
-                    {
+                //for (UploadData inputList : uploadDataList) {
+                 //   if (!inputList.getFilename().contains("Screenshot.png")
+                 //   && !inputList.getFilename().contains("DS_Store"))
+                  //  {
                         // Add your code here to process each list of UploadData
-                        LocalDateTime localDateTime = DateParser.findDateTimeInString(inputList.getRawLine());
-                        if ( localDateTime == null)
-                            System.out.println("Yippi: " + inputList.getRawLine() + " " + inputList.getFilename());;
-                    }
-                }
+                        //LocalDateTime localDateTime = DateParser.findDateTimeInString(inputList.getRawLine());
+                       // if ( localDateTime == null)
+                         //   System.out.println("Yippi: " + inputList.getRawLine() + " " + inputList.getFilename());
+                       // else System.out.println("Yippi-NON-NULLI: " + inputList.getRawLine() + " " + inputList.getFilename());
+                   // }
+               // }
 
                 System.out.println(uploadDataList.size());
                 System.out.println(uploadDataList.get(1));
                 System.out.println(uploadDataList.get(uploadDataList.size()-1));
                 System.out.println(uploadDataList.get((uploadDataList.size()-1)/2));
                 logger.info("Upload successfully!");
+                uploadDataList.stream()
+                        .filter(uploadData -> uploadData.getLocalDateTime() == null)
+                        .forEach(System.out::println);
 
                 /*
                 2022-04-30T02:18:10.702388+00:00 asc28 CAL: D: === OnPLCStateChanged 36 ===

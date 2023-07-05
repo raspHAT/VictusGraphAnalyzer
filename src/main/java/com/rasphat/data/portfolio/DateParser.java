@@ -31,33 +31,27 @@ public class DateParser {
         String[] formats = {
                 "yyyy-MM-dd'T'HH:mm:ss.SSS",        // ASC Zeit
                 "EEE MMM d HH:mm:ss zzz yyyy",      // WEBDIAG Zeit
-                "MM/dd/yyyy HH:mm:ss.SSS"          // GUI LOGS
-                //"MM/dd/yyyy HH:mm:ss.SSS"             // OCT Logs
+                "MM/dd/yyyy HH:mm:ss.SSS",          // GUI LOGS
+                "M/d/yyyy HH:mm:ss.SSS"    // & OCT Logs
                 // Weitere unterstützte Formate hier hinzufügen
         };
 
         for (String format : formats) {
             try {
+                //System.out.println(input + " " + format);
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
                 dateTime = LocalDateTime.parse(input, formatter);
                 break;
             } catch (Exception e) {
+
+                //System.out.println(e.getMessage() + format + " :" + input);
                 // Das Format passt nicht, versuche das nächste
-                System.out.println(dateTime + input);
+                //System.out.println(dateTime + " String: " + input);
+
             }
         }
 
         return dateTime;
     }
 
-    public static void main(String[] args) {
-        String input = "Text mit Datum: 2022-05-06T09:16:45.062";
-        LocalDateTime dateTime = findDateTimeInString(input);
-
-        if (dateTime != null) {
-            System.out.println("Gefundenes Datum: " + dateTime);
-        } else {
-            System.out.println("Kein gültiges Datum gefunden.");
-        }
-    }
 }

@@ -1,5 +1,6 @@
 package com.rasphat.data.upload;
 
+import com.rasphat.data.portfolio.DateParser;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 import net.lingala.zip4j.exception.ZipException;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -196,10 +198,17 @@ public abstract class Upload {
         }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                UploadData uploadData = new UploadData(filename, line, project);
-                uploadDataList.add(uploadData);
+            if (!file.getName().contains("Screenshot.png") &&
+                    !file.getName().contains("Exception.txt") &&
+                    !file.getName().contains("WebDiag.html") &&
+                    !file.getName().contains(".xml")
+            ) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    LocalDateTime localDateTime = DateParser.findDateTimeInString(line);
+                    UploadData uploadData = new UploadData(filename, line, project, localDateTime);
+                    uploadDataList.add(uploadData);
+                }
             }
         }
     }
