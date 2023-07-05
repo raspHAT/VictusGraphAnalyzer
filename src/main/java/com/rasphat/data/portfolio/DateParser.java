@@ -1,9 +1,16 @@
 package com.rasphat.data.portfolio;
 
+import com.rasphat.data.upload.UploadData;
+
+import java.util.List;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class DateParser {
     public static LocalDateTime findDateTimeInString(String input) {
@@ -53,5 +60,47 @@ public class DateParser {
 
         return dateTime;
     }
+
+
+
+
+    // 05/01/2022 09:01:35.045  :)  MessageReceiver: << DMS changed - time: 5/1/2022 1:21:17 AM, force: 1.0000, state: Error
+
+    private Duration createTimeOffsetList(LocalDateTime localDateTime, String rawLine) {
+        String REGEX_OFFSET_TYPE_ONE = "(\\d{1,2})[/](\\d{1,2})[/](\\d{1,4})[ ](\\d{1,2}[:]\\d{1,2}[:]\\d{1,2})[ ](.M)";
+        String REGEX_OFFSET_TYPE_TWO = "(\\d{1,2})[-](\\w{2,3})[-](\\d{1,4})[ ](\\d{1,2}[:]\\d{1,2}[:]\\d{1,2})[ ](.M)";
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/M/d h:mm:ss a", Locale.ENGLISH);
+
+        Matcher matcherTypeOne = Pattern.compile(REGEX_OFFSET_TYPE_ONE).matcher(rawLine);
+        Matcher matcherTypeTwo = Pattern.compile(REGEX_OFFSET_TYPE_TWO).matcher(rawLine);
+
+            if (matcherTypeOne.find()) {
+                LocalDateTime localDateTimeAsc = parseDateTime(matcherTypeOne, formatter, 3, 1, 2, 4, 5);
+                return Duration.between(localDateTime, localDateTimeAsc);
+            }
+
+            if (matcherTypeTwo.find()) {
+                LocalDateTime localDateTimeAsc = parseDateTime(matcherTypeTwo, formatter, 3, 2, 1, 4, 5);
+                //getTimeOffsetList().add(new PortfolioOffset(portfolioData.getCreated(), localDateTimeAsc, Duration.between(portfolioData.getCreated(), localDateTimeAsc)));
+                return Duration.between(localDateTime, localDateTimeAsc);
+            }
+            return null;
+    }
+
+
+
+
+    private LocalDateTime parseDateTime(Matcher matcher, DateTimeFormatter formatter, int yearGroup, int monthGroup, int dayGroup, int timeGroup, int meridianGroup) {
+        String ascTime = matcher.group(yearGroup) + "/" +
+                matcher.group(monthGroup) + "/" +
+                matcher.group(dayGroup) + " " +
+                matcher.group(timeGroup) + " " +
+                matcher.group(meridianGroup);
+
+        return LocalDateTime.parse(ascTime, formatter);
+    }
+
+
 
 }

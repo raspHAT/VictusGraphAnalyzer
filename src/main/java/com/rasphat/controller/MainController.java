@@ -1,6 +1,7 @@
 package com.rasphat.controller;
 
 import com.rasphat.data.portfolio.DateParser;
+import com.rasphat.data.portfolio.PortfolioOffset;
 import com.rasphat.data.upload.UploadData;
 import com.rasphat.data.upload.UploadFactory;
 import com.rasphat.data.upload.UploadProcessor;
@@ -13,8 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.rasphat.data.portfolio.PortfolioOffset.getCalculatedDuration;
 
 @Controller
 public class MainController implements ErrorController {
@@ -63,6 +67,12 @@ public class MainController implements ErrorController {
                        // else System.out.println("Yippi-NON-NULLI: " + inputList.getRawLine() + " " + inputList.getFilename());
                    // }
                // }
+
+                List<UploadData> uploadDataOffsetList = PortfolioOffset.getFilteredUploadDataList(uploadDataList);
+                Duration test = PortfolioOffset.getCalculatedDuration(uploadDataOffsetList);
+
+
+
 
                 System.out.println(uploadDataList.size());
                 System.out.println(uploadDataList.get(1));
