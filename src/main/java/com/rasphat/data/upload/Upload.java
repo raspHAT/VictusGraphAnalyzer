@@ -2,7 +2,6 @@ package com.rasphat.data.upload;
 
 import com.rasphat.data.portfolio.DateParser;
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.model.FileHeader;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,58 +19,44 @@ import java.util.Properties;
  */
 public abstract class Upload {
 
-    protected final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
+    protected static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
     protected List<UploadData> uploadDataList = new ArrayList<>();
-    private final Logger logger = LoggerFactory.getLogger(Upload.class);
-    private String project = "";
-    protected List<Duration> averageDuration;
+    private static final Logger logger = LoggerFactory.getLogger(Upload.class);
+    protected String project;
 
     /**
-     * Retrieves the password from the application.properties file based on the given property name.
+     * Retrieves the password from the application.properties file for the specified property.
+     * The name of the property is given as a parameter.
      *
-     * @param nameOfProperty The name of the property to retrieve.
-     * @return The value of the property.
+     * @param propertyName The name of the property for which the password is to be retrieved.
+     * @return The password associated with the property in the application.properties file.
+     * @throws RuntimeException If there's an IOException when loading application.properties.
      */
-    protected String getPasswordFromProperty(String nameOfProperty) {
-        project = nameOfProperty;
-        String password;
+    protected String getPasswordFromProperty(String propertyName) {
         Properties properties = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("application.properties")) {
             properties.load(input);
-            password = properties.getProperty(nameOfProperty);
+            return properties.getProperty(propertyName);
         } catch (IOException e) {
             throw new RuntimeException("Could not load application.properties", e);
         }
-        return password;
     }
 
     /**
-     * Checks whether the provided file is a valid ZIP file.
+     * Checks if the specified file is a valid ZIP file.
+     * If the file is a valid ZIP file, this method also logs whether the ZIP file is encrypted.
      *
-     * @param file The file to check.
+     * @param file The file to be checked.
      * @return True if the file is a valid ZIP file, false otherwise.
-     * @throws IOException If an I/O error occurs.
+     * @throws IOException If an error occurs while trying to close the ZipFile.
      */
     protected boolean isValidZipFile(File file) throws IOException {
-        try (ZipFile zipFile = new ZipFile(file)) {
-            List<FileHeader> fileHeaders = zipFile.getFileHeaders();
-
-            for (FileHeader fileHeader : fileHeaders) {
-                if (fileHeader.isEncrypted()) {
-                    logger.debug(fileHeader.getFileName() + " zip file is encrypted.");
-                } else {
-                    logger.debug(fileHeader.getFileName() + " zip file is not encrypted.");
-                }
-            }
-
-            // If we got to this point without an exception being thrown, the file is a valid ZIP file
-            return true;
+        try (ZipFile ignored = new ZipFile(file)) {
+            return true; // valid if no exception is thrown
         } catch (ZipException ex) {
             logger.error(file + " is not a valid ZIP file. Exception message: " + ex.getMessage());
+            return false;
         }
-
-        // If an exception was thrown, the file is not a valid ZIP file
-        return false;
     }
 
     /**
@@ -110,7 +94,7 @@ public abstract class Upload {
      */
     protected void createTempDirectory() throws IOException {
         File tempDirectory = new File(TEMP_DIR_PATH);
-        System.out.println(tempDirectory);
+        logger.info(tempDirectory.getAbsolutePath());
         if (!tempDirectory.exists()) {
             if (!tempDirectory.mkdirs()) {
                 logger.error("Failed to create directory: " + TEMP_DIR_PATH);
@@ -150,15 +134,8 @@ public abstract class Upload {
             logger.error("Error deleting temporary directory: " + e.getMessage());
         }
     }
-
-    /**
-     * Processes the files in the temporary directory and returns a list of UploadData objects.
-     *
-     * @return The list of UploadData objects.
-     * @throws IOException If an I/O error occurs.
-     */
     protected List<UploadData> processFiles() throws IOException {
-        List<UploadData> uploadDataList = new ArrayList<>();
+        uploadDataList.clear();  // Clear the list to avoid adding duplicate data
         processDirectory(new File(TEMP_DIR_PATH), uploadDataList);
         return uploadDataList;
     }
@@ -186,32 +163,39 @@ public abstract class Upload {
 
     /**
      * Processes a file and creates an UploadData object for each line in the file.
+     * If the file's name matches any of the ignored names (as determined by isIgnoredFile),
+     * the method does not process the file.
      *
-     * @param file             The file to process.
-     * @param uploadDataList   The list to add the UploadData objects to.
-     * @throws IOException     If an I/O error occurs.
+     * @param file The file to process.
+     * @param uploadDataList The list to add the UploadData objects to.
+     * @throws IOException If an I/O error occurs.
      */
     protected void processFile(File file, List<UploadData> uploadDataList) throws IOException {
-
         String filename = file.getName();
 
-        if (filename.equals("VictusGraphAnalyzer.zip")) {
-            return;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            if (!file.getName().contains("Screenshot.png") &&
-                    !file.getName().contains("Exception.txt") &&
-                    !file.getName().contains("WebDiag.html") &&
-                    !file.getName().contains(".xml")
-            ) {
+        if (!isIgnoredFile(filename)) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     LocalDateTime localDateTime = DateParser.findDateTimeInString(line);
-                    UploadData uploadData = new UploadData(filename, line, project, localDateTime);
-                    uploadDataList.add(uploadData);
+                    uploadDataList.add(new UploadData(filename, line, project, localDateTime));
                 }
             }
         }
+    }
+
+    /**
+     * Checks if the given filename is one of the ignored filenames.
+     * The ignored filenames are "VictusGraphAnalyzer.zip", "Screenshot.png", "Exception.txt", "WebDiag.html", and any filename containing ".xml".
+     *
+     * @param filename The filename to check.
+     * @return True if the filename is ignored, false otherwise.
+     */
+    private boolean isIgnoredFile(String filename) {
+        return filename.equals("VictusGraphAnalyzer.zip")
+                || filename.contains("Screenshot.png")
+                || filename.contains("Exception.txt")
+                || filename.contains("WebDiag.html")
+                || filename.contains(".xml");
     }
 }

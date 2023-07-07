@@ -58,7 +58,7 @@ public class MainController implements ErrorController {
                 UploadProcessor uploadProcessor = uploadFactory.getUploadProcessor(project);
                 List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
 
-                new PortfolioOffset(uploadDataList);
+                //new PortfolioOffset(uploadDataList);
 
                 //for (UploadData inputList : uploadDataList) {
                  //   if (!inputList.getFilename().contains("Screenshot.png")
@@ -83,9 +83,9 @@ public class MainController implements ErrorController {
                 System.out.println(uploadDataList.get(uploadDataList.size()-1));
                 System.out.println(uploadDataList.get((uploadDataList.size()-1)/2));
                 logger.info("Upload successfully!");
-                uploadDataList.stream()
-                        .filter(uploadData -> uploadData.getLocalDateTime() == null)
-                        .forEach(System.out::println);
+                //uploadDataList.stream()
+                  //      .filter(uploadData -> uploadData.getLocalDateTime() == null)
+                    //    .forEach(System.out::println);
 
                 /*
                 2022-04-30T02:18:10.702388+00:00 asc28 CAL: D: === OnPLCStateChanged 36 ===
