@@ -14,17 +14,10 @@ public class PortfolioOffset {
 
     public PortfolioOffset(List<UploadData> uploadDataList) {
         List<UploadData> filteredList = filterUploadDataList(uploadDataList);
+
         sortUploadDataListDescending(filteredList);
         createUploadDataMap(filteredList);
 
-        System.out.println(filteredList.get(0).getLocalDateTime() + " " + filteredList.get(0).getRawLine());
-        System.out.println(uploadDataMap.get(filteredList.get(0).getRawLine()));
-        System.out.println(filteredList.get(21).getLocalDateTime() + " " + filteredList.get(21).getRawLine());
-        System.out.println(uploadDataMap.get(filteredList.get(21).getRawLine()));
-        System.out.println(filteredList.get(31).getLocalDateTime() + " " + filteredList.get(31).getRawLine());
-        System.out.println(uploadDataMap.get(filteredList.get(31).getRawLine()));
-        System.out.println(filteredList.get(41).getLocalDateTime() + " " + filteredList.get(41).getRawLine());
-        System.out.println(uploadDataMap.get(filteredList.get(41).getRawLine()));
     }
 
     private List<UploadData> filterUploadDataList(List<UploadData> uploadDataList) {

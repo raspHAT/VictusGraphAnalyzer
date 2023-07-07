@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public abstract class Upload {
     protected List<UploadData> uploadDataList = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(Upload.class);
     private String project = "";
+    protected List<Duration> averageDuration;
 
     /**
      * Retrieves the password from the application.properties file based on the given property name.
