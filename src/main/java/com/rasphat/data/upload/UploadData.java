@@ -31,7 +31,7 @@ public class UploadData {
         this.localDateTime = localDateTime;
     }
 
-    @Override
+/*    @Override
     public String toString() {
         return "UploadData{" +
                 "filename='" + filename + '\'' +
@@ -39,5 +39,5 @@ public class UploadData {
                 ", project='" + project + '\'' +
                 ", localDateTime=" + localDateTime +
                 '}';
-    }
+    }*/
 }

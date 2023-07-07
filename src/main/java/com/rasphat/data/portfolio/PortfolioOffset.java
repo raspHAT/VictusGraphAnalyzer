@@ -5,10 +5,56 @@ import com.rasphat.data.upload.UploadData;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PortfolioOffset {
+
+    private Map<String, LocalDateTime> uploadDataMap;
+
+    public PortfolioOffset(List<UploadData> uploadDataList) {
+        List<UploadData> filteredList = filterUploadDataList(uploadDataList);
+        sortUploadDataListDescending(filteredList);
+        createUploadDataMap(filteredList);
+
+        System.out.println(filteredList.get(0).getLocalDateTime() + " " + filteredList.get(0).getRawLine());
+        System.out.println(uploadDataMap.get(filteredList.get(0).getRawLine()));
+        System.out.println(filteredList.get(21).getLocalDateTime() + " " + filteredList.get(21).getRawLine());
+        System.out.println(uploadDataMap.get(filteredList.get(21).getRawLine()));
+        System.out.println(filteredList.get(31).getLocalDateTime() + " " + filteredList.get(31).getRawLine());
+        System.out.println(uploadDataMap.get(filteredList.get(31).getRawLine()));
+        System.out.println(filteredList.get(41).getLocalDateTime() + " " + filteredList.get(41).getRawLine());
+        System.out.println(uploadDataMap.get(filteredList.get(41).getRawLine()));
+    }
+
+    private List<UploadData> filterUploadDataList(List<UploadData> uploadDataList) {
+        return uploadDataList.stream()
+                .filter(uploadData -> uploadData.getFilename().equals("messages"))
+                .collect(Collectors.toList());
+    }
+
+    private void sortUploadDataListDescending(List<UploadData> uploadDataList) {
+        Comparator<UploadData> dateTimeComparator = Comparator.comparing(UploadData::getLocalDateTime).reversed();
+        uploadDataList.sort(dateTimeComparator);
+    }
+
+
+    public void createUploadDataMap(List<UploadData> uploadDataList) {
+        uploadDataMap = new HashMap<>();
+
+        for (UploadData uploadData : uploadDataList) {
+            String rawLine = uploadData.getRawLine();
+            LocalDateTime localDateTime = uploadData.getLocalDateTime();
+
+            uploadDataMap.put(rawLine, localDateTime);
+        }
+    }
+
+    public Map<String, LocalDateTime> getUploadDataMap() {
+        return uploadDataMap;
+    }
+
+
 
     public static List<UploadData> getFilteredUploadDataList(List<UploadData> uploadDataList) {
         return uploadDataList.stream()
@@ -29,8 +75,7 @@ public class PortfolioOffset {
         String timestamp = extractTimestampFromRawLine(rawLine);
         LocalDateTime messageTime = parseTimestamp(timestamp);
         LocalDateTime uploadTime = uploadData.getLocalDateTime();
-        Duration offset = Duration.between(uploadTime, messageTime);
-        return offset;
+        return Duration.between(uploadTime, messageTime);
     }
 
     private static String extractTimestampFromRawLine(String rawLine) {

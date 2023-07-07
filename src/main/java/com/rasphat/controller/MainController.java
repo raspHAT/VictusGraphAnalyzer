@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.sound.sampled.Port;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static com.rasphat.data.portfolio.PortfolioOffset.getCalculatedDuration;
@@ -56,6 +58,8 @@ public class MainController implements ErrorController {
                 UploadProcessor uploadProcessor = uploadFactory.getUploadProcessor(project);
                 List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
 
+                new PortfolioOffset(uploadDataList);
+
                 //for (UploadData inputList : uploadDataList) {
                  //   if (!inputList.getFilename().contains("Screenshot.png")
                  //   && !inputList.getFilename().contains("DS_Store"))
@@ -68,8 +72,8 @@ public class MainController implements ErrorController {
                    // }
                // }
 
-                List<UploadData> uploadDataOffsetList = PortfolioOffset.getFilteredUploadDataList(uploadDataList);
-                Duration test = PortfolioOffset.getCalculatedDuration(uploadDataOffsetList);
+                //List<UploadData> uploadDataOffsetList = PortfolioOffset.getFilteredUploadDataList(uploadDataList);
+                //Duration test = PortfolioOffset.getCalculatedDuration(uploadDataOffsetList);
 
 
 
