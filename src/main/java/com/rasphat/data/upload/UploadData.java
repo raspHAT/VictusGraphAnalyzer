@@ -1,6 +1,5 @@
 package com.rasphat.data.upload;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -11,9 +10,7 @@ public class UploadData {
     private final String filename;
     private final String rawLine;
     private final String project;
-    private LocalDateTime originalLocalDateTime;
-    private Duration duration;
-    private LocalDateTime correctedLocalDateTime;
+    private LocalDateTime localDateTime;
 
     /**
      * Initializes a new instance of the UploadData class.
@@ -21,15 +18,13 @@ public class UploadData {
      * @param filename The name of the file the data originated from.
      * @param rawLine The raw text of the data line.
      * @param project The name of the project associated with the data.
-     * @param originalLocalDateTime The date and time associated with the data.
+     * @param localDateTime The date and time associated with the data.
      */
-    public UploadData(String filename, String rawLine, String project, LocalDateTime originalLocalDateTime, LocalDateTime correctedLocalDateTime, Duration duration) {
+    public UploadData(String filename, String rawLine, String project, LocalDateTime localDateTime) {
         this.filename = filename;
         this.rawLine = rawLine;
         this.project = project;
-        this.originalLocalDateTime = originalLocalDateTime;
-        this.correctedLocalDateTime = correctedLocalDateTime;
-        this.duration = duration;
+        this.localDateTime = localDateTime;
     }
 
     /**
@@ -60,41 +55,21 @@ public class UploadData {
     }
 
     /**
-     * Gets the date and time associated with the data.
+     * SGts the date and time associated with the data.
      *
-     * @return The date and time.
+     * @return The date and time to set.
      */
-    public LocalDateTime getOriginalLocalDateTime() {
-        return originalLocalDateTime;
+    public LocalDateTime getLocalDateTime() {
+        return localDateTime;
     }
 
     /**
      * Sets the date and time associated with the data.
      *
-     * @param originalLocalDateTime The date and time to set.
+     * @param localDateTime The date and time to set.
      */
-    public void setLocalDateTime(LocalDateTime originalLocalDateTime) {
-        this.originalLocalDateTime = originalLocalDateTime;
-    }
-
-    public void setOriginalLocalDateTime(LocalDateTime originalLocalDateTime) {
-        this.originalLocalDateTime = originalLocalDateTime;
-    }
-
-    public Duration getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Duration duration) {
-        this.duration = duration;
-    }
-
-    public LocalDateTime getCorrectedLocalDateTime() {
-        return correctedLocalDateTime;
-    }
-
-    public void setCorrectedLocalDateTime(LocalDateTime correctedLocalDateTime) {
-        this.correctedLocalDateTime = correctedLocalDateTime;
+    public void setLocalDateTime(LocalDateTime localDateTime) {
+        this.localDateTime = localDateTime;
     }
 
     /**
@@ -108,7 +83,7 @@ public class UploadData {
                 "filename='" + filename + '\'' +
                 ", rawLine='" + rawLine + '\'' +
                 ", project='" + project + '\'' +
-                ", originalLocalDateTime=" + originalLocalDateTime +
+                ", originalLocalDateTime=" + localDateTime +
                 '}';
     }
 
@@ -119,13 +94,13 @@ public class UploadData {
      */
     public String stringToSaveInFile() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-        String formattedDateTime = originalLocalDateTime.format(formatter);
+        String formattedDateTime = localDateTime.format(formatter);
         StringBuilder adjustedFilename = new StringBuilder(filename.substring(0, Math.min(filename.length(), 10)));
         // If filename is shorter than 10 characters, fill with spaces
         while (adjustedFilename.length() < 10) {
             adjustedFilename.append(" ");
         }
 
-        return formattedDateTime + " " +adjustedFilename + " " + getDuration() + " " + getCorrectedLocalDateTime()+  " " + rawLine;
+        return formattedDateTime + " " + adjustedFilename +  " " + rawLine;
     }
 }

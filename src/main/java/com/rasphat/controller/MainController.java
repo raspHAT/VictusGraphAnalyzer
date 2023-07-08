@@ -96,7 +96,7 @@ public class MainController implements ErrorController {
 
                     try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(windowsDesktopVictusTxtFile.toPath()))) {
                         uploadDataList.stream()
-                                .filter(uploadData -> uploadData.getOriginalLocalDateTime() != null)
+                                .filter(uploadData -> uploadData.getLocalDateTime() != null)
                                 .map(UploadData::stringToSaveInFile)
                                 .forEach(writer::println);
                     } catch (IOException e) {
@@ -113,7 +113,7 @@ public class MainController implements ErrorController {
 
                     try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(macOSDesktopVictusTxtFile.toPath()))) {
                         uploadDataList.stream()
-                                .filter(uploadData -> uploadData.getOriginalLocalDateTime() != null)
+                                .filter(uploadData -> uploadData.getLocalDateTime() != null)
                                 .map(UploadData::stringToSaveInFile)
                                 .forEach(writer::println);
                     } catch (IOException e) {

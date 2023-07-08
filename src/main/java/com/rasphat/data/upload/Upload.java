@@ -3,16 +3,21 @@ package com.rasphat.data.upload;
 import com.rasphat.data.portfolio.DateParser;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Abstract class for uploading and processing files.
@@ -21,8 +26,13 @@ public abstract class Upload {
 
     protected static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
     protected List<UploadData> uploadDataList = new ArrayList<>();
-    private static final Logger logger = LoggerFactory.getLogger(Upload.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Upload.class);
     protected String project;
+    private static final String DATE_TIME_FORMAT = "M/d/yyyy h:mm:ss a";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+    private static final String DATE_TIME_REGEX = "\\d{1,2}/\\d{1,2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} [AP]M";
+    private static final Pattern PATTERN = Pattern.compile(DATE_TIME_REGEX);
+    protected static SimpleRegression simpleRegression = new SimpleRegression();
 
     /**
      * Retrieves the password from the application.properties file for the specified property.
@@ -54,7 +64,7 @@ public abstract class Upload {
         try (ZipFile ignored = new ZipFile(file)) {
             return true; // valid if no exception is thrown
         } catch (ZipException ex) {
-            logger.error(file + " is not a valid ZIP file. Exception message: " + ex.getMessage());
+            LOGGER.error(file + " is not a valid ZIP file. Exception message: " + ex.getMessage());
             return false;
         }
     }
@@ -72,7 +82,7 @@ public abstract class Upload {
             File tempFile = transferFile(multipartFile);
 
             if (!isValidZipFile(tempFile)) {
-                logger.info("Not a zip file");
+                LOGGER.info("Not a zip file");
                 return;
             }
 
@@ -83,7 +93,7 @@ public abstract class Upload {
                 zipFile.extractAll(TEMP_DIR_PATH);
             }
         } catch (IOException e) {
-            logger.error("Error extracting zip file: " + e.getMessage());
+            LOGGER.error("Error extracting zip file: " + e.getMessage());
         }
     }
 
@@ -94,10 +104,10 @@ public abstract class Upload {
      */
     protected void createTempDirectory() throws IOException {
         File tempDirectory = new File(TEMP_DIR_PATH);
-        logger.info(tempDirectory.getAbsolutePath());
+        LOGGER.info(tempDirectory.getAbsolutePath());
         if (!tempDirectory.exists()) {
             if (!tempDirectory.mkdirs()) {
-                logger.error("Failed to create directory: " + TEMP_DIR_PATH);
+                LOGGER.error("Failed to create directory: " + TEMP_DIR_PATH);
             }
         }
     }
@@ -129,9 +139,9 @@ public abstract class Upload {
 
         try {
             FileUtils.deleteDirectory(tempDirectory);
-            logger.info("Temporary directory deleted: " + TEMP_DIR_PATH);
+            LOGGER.info("Temporary directory deleted: " + TEMP_DIR_PATH);
         } catch (IOException e) {
-            logger.error("Error deleting temporary directory: " + e.getMessage());
+            LOGGER.error("Error deleting temporary directory: " + e.getMessage());
         }
     }
     protected List<UploadData> processFiles() throws IOException {
@@ -178,7 +188,7 @@ public abstract class Upload {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     LocalDateTime localDateTime = DateParser.findDateTimeInString(line);
-                    uploadDataList.add(new UploadData(filename, line, project, localDateTime, null, null));
+                    uploadDataList.add(new UploadData(filename, line, project, localDateTime));
                 }
             }
         }
@@ -194,5 +204,85 @@ public abstract class Upload {
     private boolean isIgnoredFile(String filename) {
         return filename.equals("VictusGraphAnalyzer.zip")
                 || filename.contains("Screenshot.png");
+    }
+
+
+
+
+    protected void calculateRegression(Map<LocalDateTime, Duration> timestampsDurationsMap) {
+
+        // Check if map is null or empty
+        if (timestampsDurationsMap == null || timestampsDurationsMap.isEmpty()) {
+            throw new IllegalArgumentException("Invalid input map");
+        }
+
+        SimpleRegression regression = new SimpleRegression();
+
+        for (Map.Entry<LocalDateTime, Duration> entry : timestampsDurationsMap.entrySet()) {
+            double timestampAsEpochSecond = entry.getKey().toEpochSecond(ZoneOffset.UTC);
+            double durationAsSeconds = entry.getValue().getSeconds();
+
+            regression.addData(timestampAsEpochSecond, durationAsSeconds);
+        }
+        simpleRegression = regression;
+        //return regression;
+    }
+
+
+
+
+    public Map<LocalDateTime, Duration> processUploadDataList(List<UploadData> uploadDataList) {
+        // Filter the list for filenames containing "DMS"
+        List<UploadData> filteredList = uploadDataList.stream()
+                .filter(uploadData -> uploadData.getFilename().contains("DMS"))
+                .collect(Collectors.toList());
+
+        // Map to hold LocalDateTime as key and Duration as value
+        Map<LocalDateTime, Duration> dateTimeDurationMap = new HashMap<>();
+
+        for (UploadData uploadData : filteredList) {
+            LocalDateTime fromRawLine = extractLocalDateTimeFromRawLine(uploadData.getRawLine()); // Your method to extract LocalDateTime from rawLine
+            LocalDateTime fromUploadData = uploadData.getLocalDateTime();
+
+            // Calculating the duration between the two dates
+            Duration duration = Duration.between(fromRawLine, fromUploadData);
+
+            // Putting the LocalDateTime and Duration into the map
+            dateTimeDurationMap.put(fromUploadData, duration);
+        }
+
+        return dateTimeDurationMap;
+    }
+
+
+
+
+
+
+    private LocalDateTime extractLocalDateTimeFromRawLine(String rawLine) {
+        // TODO: Implement your logic to extract LocalDateTime from rawLine
+
+        if (rawLine != null) {
+
+            // Find the date time substring using the pattern
+            Matcher matcher = PATTERN.matcher(rawLine);
+            if (matcher.find()) {
+                String dateTimeString = matcher.group();
+
+                return LocalDateTime.parse(dateTimeString, FORMATTER);
+            }
+        }
+        return null;
+    }
+
+    public LocalDateTime correctDateTime(LocalDateTime dateTime) {
+        // Convert the original LocalDateTime to epoch milliseconds
+        long originalMilliseconds = dateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+
+        // Predict the offset in milliseconds using SimpleRegression
+        long offsetMilliseconds = (long)simpleRegression.predict(originalMilliseconds);
+
+        // Correct the original LocalDateTime by the predicted offset and return
+        return dateTime.minus(Duration.ofMillis(offsetMilliseconds));
     }
 }

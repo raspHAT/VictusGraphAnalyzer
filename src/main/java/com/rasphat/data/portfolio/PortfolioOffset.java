@@ -27,7 +27,7 @@ public class PortfolioOffset {
     }
 
     private void sortUploadDataListDescending(List<UploadData> uploadDataList) {
-        Comparator<UploadData> dateTimeComparator = Comparator.comparing(UploadData::getOriginalLocalDateTime).reversed();
+        Comparator<UploadData> dateTimeComparator = Comparator.comparing(UploadData::getLocalDateTime).reversed();
         uploadDataList.sort(dateTimeComparator);
     }
 
@@ -37,7 +37,7 @@ public class PortfolioOffset {
 
         for (UploadData uploadData : uploadDataList) {
             String rawLine = uploadData.getRawLine();
-            LocalDateTime localDateTime = uploadData.getOriginalLocalDateTime();
+            LocalDateTime localDateTime = uploadData.getLocalDateTime();
 
             uploadDataMap.put(rawLine, localDateTime);
         }
@@ -67,7 +67,7 @@ public class PortfolioOffset {
         String rawLine = uploadData.getRawLine();
         String timestamp = extractTimestampFromRawLine(rawLine);
         LocalDateTime messageTime = parseTimestamp(timestamp);
-        LocalDateTime uploadTime = uploadData.getOriginalLocalDateTime();
+        LocalDateTime uploadTime = uploadData.getLocalDateTime();
         return Duration.between(uploadTime, messageTime);
     }
 
