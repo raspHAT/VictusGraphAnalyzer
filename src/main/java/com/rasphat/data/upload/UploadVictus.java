@@ -26,6 +26,9 @@ public class UploadVictus extends Upload implements UploadProcessor {
     private static final String DATE_TIME_REGEX = "\\d{1,2}/\\d{1,2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} [AP]M";
     private static final Pattern PATTERN = Pattern.compile(DATE_TIME_REGEX);
 
+    // Klassenmitglied zum Speichern der letzten berechneten Duration
+    private Duration lastCalculatedDuration = Duration.ZERO;
+
     /**
      * Process the upload data.
      * @param multipartFile The data to upload.
@@ -44,21 +47,28 @@ public class UploadVictus extends Upload implements UploadProcessor {
             LOGGER.error("An error occurred while processing files.", e);
         }
 
-        List<Duration> durationList = calculateDurationFromUploadDataList();
-        Duration averageDuration = calculateAverageDuration(durationList);
+        uploadDataList.removeIf(uploadData -> uploadData.getOriginalLocalDateTime() == null);
+        uploadDataList.sort(Comparator.comparing(UploadData::getOriginalLocalDateTime));
+
+        calculateAndSetDurationFromUploadDataList();
+
+
+
+        //List<Duration> durationList = calculateDurationFromUploadDataList();
+        //Duration averageDuration = calculateAverageDuration(durationList);
 
 
 
 // Sort the list based on the absolute deviation from the average.
-        durationList.sort(Comparator.comparingLong(duration -> Math.abs(duration.toMillis() - averageDuration.toMillis())));
+//        durationList.sort(Comparator.comparingLong(duration -> Math.abs(duration.toMillis() - averageDuration.toMillis())));
 
 // Print the first 10 durations.
-        LOGGER.info("First 10 durations by deviation from the average:");
-        for (int i = 0; i < Math.min(10, durationList.size()); i++) {
-            LOGGER.info(durationList.get(i).toString());
-        }
+       // LOGGER.info("First 10 durations by deviation from the average:");
+  ////      for (int i = 0; i < Math.min(10, durationList.size()); i++) {
+      //      LOGGER.info(durationList.get(i).toString());
+        //}
 
-// Print the last 10 durations.
+/*// Print the last 10 durations.
         LOGGER.info("Last 10 durations by deviation from the average:");
         for (int i = Math.max(0, durationList.size() - 100); i < durationList.size(); i++) {
             LOGGER.info(durationList.get(i).toString());
@@ -67,7 +77,7 @@ public class UploadVictus extends Upload implements UploadProcessor {
 
         LOGGER.info("Average Duration: {}", averageDuration);
 
-        correctUploadDataLocalTimeDate(uploadDataList, averageDuration);
+        correctUploadDataLocalTimeDate(uploadDataList, averageDuration);*/
 
         uploadDataList.sort(Comparator.comparing(UploadData::getOriginalLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
 
@@ -153,6 +163,24 @@ public class UploadVictus extends Upload implements UploadProcessor {
         return Duration.ofNanos(Math.round(totalNanos / (double) durationList.size()));
     }
 
+
+    private void calculateAndSetDurationFromUploadDataList() {
+
+        for (UploadData uploadData : uploadDataList) {
+            try {
+                String dateTimeString = parseDateTimeString(uploadData.getRawLine());
+                if (dateTimeString != null) {
+                    LocalDateTime localDateTime = LocalDateTime.parse(dateTimeString, FORMATTER);
+                    lastCalculatedDuration = Duration.between(uploadData.getOriginalLocalDateTime(), localDateTime);
+                }
+                uploadData.setDuration(lastCalculatedDuration); // Setzen Sie die Dauer in dem UploadData-Objekt, unabhängig davon, ob die Regex übereinstimmt oder nicht
+            }
+            catch (Exception e){
+                LOGGER.error("An error occurred while calculating duration. Error: {} File: {} RawLine: {} Project: {}",
+                        e.getMessage(), uploadData.getFilename(), uploadData.getRawLine(), uploadData.getProject());
+            }
+        }
+    }
 
 
 
