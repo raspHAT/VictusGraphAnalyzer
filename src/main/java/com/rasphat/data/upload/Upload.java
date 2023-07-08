@@ -193,9 +193,6 @@ public abstract class Upload {
      */
     private boolean isIgnoredFile(String filename) {
         return filename.equals("VictusGraphAnalyzer.zip")
-                || filename.contains("Screenshot.png")
-                || filename.contains("Exception.txt");
-                //|| filename.contains("WebDiag.html")
-                //|| filename.contains(".xml");
+                || filename.contains("Screenshot.png");
     }
 }

@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sound.sampled.Port;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -38,7 +42,9 @@ public class MainController implements ErrorController {
      * that will be presented to the user when an error occurs.
      */
 
-    private final Logger logger = LoggerFactory.getLogger(MainController.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
+
+    private static final File desktopVictusTxtFile = new File("C:\\Users\\PLAKINM\\OneDrive - Bausch & Lomb, Inc\\Desktop\\ANALYSER.txt");
 
 
     @GetMapping("/")
@@ -78,14 +84,25 @@ public class MainController implements ErrorController {
 
 
 
-                System.out.println(uploadDataList.size());
-                System.out.println(uploadDataList.get(1));
-                System.out.println(uploadDataList.get(uploadDataList.size()-1));
-                System.out.println(uploadDataList.get((uploadDataList.size()-1)/2));
-                logger.info("Upload successfully!");
-                uploadDataList.stream()
-                        .filter(uploadData -> uploadData.getLocalDateTime() != null)
-                        .forEach(System.out::println);
+                LOGGER.info(String.valueOf(uploadDataList.size()));
+                LOGGER.info(String.valueOf(uploadDataList.get(1)));
+                LOGGER.info(String.valueOf(uploadDataList.get(uploadDataList.size()-1)));
+                LOGGER.info(String.valueOf(uploadDataList.get((uploadDataList.size()-1)/2)));
+                LOGGER.info("Upload successfully!");
+                //uploadDataList.stream()
+                  //      .filter(uploadData -> uploadData.getLocalDateTime() != null)
+                    //    .forEach(System.out::println);
+
+                try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(desktopVictusTxtFile.toPath()))) {
+                    uploadDataList.stream()
+                            .filter(uploadData -> uploadData.getLocalDateTime() != null)
+                            .map(UploadData::stringToSaveInFile)
+                            .forEach(writer::println);
+                } catch (IOException e) {
+                    LOGGER.error("Error writing to file: ", e);
+                }
+
+
 
                 /*
                 2022-04-30T02:18:10.702388+00:00 asc28 CAL: D: === OnPLCStateChanged 36 ===
@@ -97,7 +114,7 @@ public class MainController implements ErrorController {
                 return "redirect:/success";
 
             } catch (Exception e) {
-                logger.info(e.getMessage());
+                LOGGER.error(e.getMessage());
                 return "redirect:/error";
             }
         } else {

@@ -85,4 +85,13 @@ public class UploadData {
                 ", localDateTime=" + localDateTime +
                 '}';
     }
+
+    /**
+     * Returns a string representation of the upload data.
+     *
+     * @return A string representing the upload data.
+     */
+    public String stringToSaveInFile() {
+        return localDateTime + " " + rawLine + "/t/t/t" + filename;
+    }
 }
