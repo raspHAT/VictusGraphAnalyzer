@@ -18,143 +18,114 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.List;
 
+/**
+ * MainController class handles the file uploading process and delegates the data processing to UploadProcessor.
+ * It also takes care of differentiating the operating system and writing output to the appropriate location.
+ */
 @Controller
 public class MainController implements ErrorController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
+    private static final File WINDOWS_DESKTOP_VICTUS_TXT_FILE = new File("C:\\Users\\PLAKINM\\OneDrive - Bausch & Lomb, Inc\\Desktop\\ANALYSER.txt");
+    private static final File MAC_OS_DESKTOP_VICTUS_TXT_FILE = new File(System.getProperty("user.home") + "/Desktop/ANALYSER.txt");
+    private static final String OS = System.getProperty("os.name").toLowerCase();
+
     /**
-     * The MainController class serves as a controller component in Spring Framework.
-     * It implements the ErrorController interface, which is a part of Spring Boot.
-     * The ErrorController interface provides a mechanism to handle errors and
-     * customize error pages in the application.
-     * By implementing the ErrorController interface, the MainController
-     * takes on the responsibility of handling error navigation.
-     * Whenever an error occurs, the MainController will be invoked to handle it.
-     * In this specific case, when the /error path is accessed, the MainController
-     * redirects to an error.html file. This file contains the customized content
-     * that will be presented to the user when an error occurs.
+     * Serves the index.html page.
+     * @return a string representing the path to index.html.
      */
-
-    private final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
-
-    private static final File windowsDesktopVictusTxtFile = new File("C:\\Users\\PLAKINM\\OneDrive - Bausch & Lomb, Inc\\Desktop\\ANALYSER.txt");
-
-    private static final File macOSDesktopVictusTxtFile = new File(System.getProperty("user.home") + "/Desktop/ANALYSER.txt");
-
-
-    private static final String os = System.getProperty("os.name").toLowerCase();
-
-
     @GetMapping("/")
     public String index() {
         return "index.html";
     }
 
+    /**
+     * Handles the upload of files.
+     * Processes the data and writes the output to a specific location based on the operating system.
+     * @param project represents the project associated with the upload.
+     * @param file represents the file being uploaded.
+     * @return a string representing the path to the next page, depending on whether the upload was successful or not.
+     */
     @PostMapping("/upload")
-    public String upload(
-            @RequestParam("project") String project,
-            @RequestParam("file") MultipartFile file) {
+    public String upload(@RequestParam("project") String project, @RequestParam("file") MultipartFile file) {
 
-        if (file != null && !file.isEmpty() && project != null && !project.isEmpty()) {
-            try {
+        if (file == null || file.isEmpty() || project == null || project.isEmpty()) {
+            return "redirect:/error";
+        }
 
-                UploadFactory uploadFactory= new UploadFactory();
-                UploadProcessor uploadProcessor = uploadFactory.getUploadProcessor(project);
-                List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
+        try {
+            UploadFactory uploadFactory= new UploadFactory();
+            UploadProcessor uploadProcessor = uploadFactory.getUploadProcessor(project);
+            List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
 
-                //new PortfolioOffset(uploadDataList);
-
-                //for (UploadData inputList : uploadDataList) {
-                 //   if (!inputList.getFilename().contains("Screenshot.png")
-                 //   && !inputList.getFilename().contains("DS_Store"))
-                  //  {
-                        // Add your code here to process each list of UploadData
-                        //LocalDateTime localDateTime = DateParser.findDateTimeInString(inputList.getRawLine());
-                       // if ( localDateTime == null)
-                         //   System.out.println("Yippi: " + inputList.getRawLine() + " " + inputList.getFilename());
-                       // else System.out.println("Yippi-NON-NULLI: " + inputList.getRawLine() + " " + inputList.getFilename());
-                   // }
-               // }
-
-                //List<UploadData> uploadDataOffsetList = PortfolioOffset.getFilteredUploadDataList(uploadDataList);
-                //Duration test = PortfolioOffset.getCalculatedDuration(uploadDataOffsetList);
-
-
-
-
-                LOGGER.info(String.valueOf(uploadDataList.size()));
-                LOGGER.info(String.valueOf(uploadDataList.get(1)));
-                LOGGER.info(String.valueOf(uploadDataList.get(uploadDataList.size()-1)));
-                LOGGER.info(String.valueOf(uploadDataList.get((uploadDataList.size()-1)/2)));
-                //uploadDataList.stream()
-                //      .filter(uploadData -> uploadData.getLocalDateTime() != null)
-                //    .forEach(System.out::println);
-
-
-                if (os.contains("win")) {
-                    LOGGER.info("This is Windows");
-
-
-                    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(windowsDesktopVictusTxtFile.toPath()))) {
-                        uploadDataList.stream()
-                                .filter(uploadData -> uploadData.getLocalDateTime() != null)
-                                .map(UploadData::stringToSaveInFile)
-                                .forEach(writer::println);
-                    } catch (IOException e) {
-                        LOGGER.error("Error writing to file: ", e);
-                    }
-
-
-
-                } else if (os.contains("mac")) {
-                    LOGGER.info("This is Mac");
-
-
-
-
-                    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(macOSDesktopVictusTxtFile.toPath()))) {
-                        uploadDataList.stream()
-                                .filter(uploadData -> uploadData.getLocalDateTime() != null)
-                                .map(UploadData::stringToSaveInFile)
-                                .forEach(writer::println);
-                    } catch (IOException e) {
-                        LOGGER.error("Error writing to file: ", e);
-                    }
-
-                } else {
-                    LOGGER.info("Your OS is not supported");
-                    // Handle other operating systems
-                }
-
-                LOGGER.info("Upload successfully!");
-
-
-                /*
-                2022-04-30T02:18:10.702388+00:00 asc28 CAL: D: === OnPLCStateChanged 36 ===
-                    <td>Sat May  7 09:36:54 UTC 2022
-                05/06/2022 09:16:45.062  :)  t:14 (engine Camera.Motor) base::CameraBase.Dispose_(): Dispose
-                - <4/23/2022 07:50:10.934> ERROR: No swept source controller created.
-                */
-
-                return "redirect:/success";
-
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage());
-                return "redirect:/error";
+            if (isOSWindows()) {
+                LOGGER.info("This is Windows");
+                writeToFile(uploadDataList, WINDOWS_DESKTOP_VICTUS_TXT_FILE);
+            } else if (isOSMac()) {
+                LOGGER.info("This is Mac");
+                writeToFile(uploadDataList, MAC_OS_DESKTOP_VICTUS_TXT_FILE);
+            } else {
+                LOGGER.info("Your OS is not supported");
+                // Handle other operating systems
             }
-        } else {
+
+            LOGGER.info("Upload successfully!");
+
+            return "redirect:/success";
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
             return "redirect:/error";
         }
     }
 
+    /**
+     * Helper method to write data to a specific file.
+     * @param uploadDataList represents the list of UploadData to write.
+     * @param file represents the file to write to.
+     */
+    private void writeToFile(List<UploadData> uploadDataList, File file) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(file.toPath()))) {
+            uploadDataList.stream()
+                    .filter(uploadData -> uploadData.getLocalDateTime() != null)
+                    .map(UploadData::stringToSaveInFile)
+                    .forEach(writer::println);
+        } catch (IOException e) {
+            LOGGER.error("Error writing to file: ", e);
+        }
+    }
+
+    /**
+     * Helper method to check if the operating system is Windows.
+     * @return true if the operating system is Windows, false otherwise.
+     */
+    private boolean isOSWindows() {
+        return OS.contains("win");
+    }
+
+    /**
+     * Helper method to check if the operating system is Mac.
+     * @return true if the operating system is Mac, false otherwise.
+     */
+    private boolean isOSMac() {
+        return OS.contains("mac");
+    }
+
+    /**
+     * Serves the success.html page.
+     * @return a string representing the path to success.html.
+     */
     @GetMapping("/success")
     public String success() {
         return "success.html";
     }
 
+    /**
+     * Serves the error.html page.
+     * @return a string representing the path to error.html.
+     */
     @GetMapping("/error")
     public String error() {
         return "error.html";
     }
-
-
 }
