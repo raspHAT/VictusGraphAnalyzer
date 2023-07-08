@@ -43,8 +43,7 @@ public class UploadVictus extends Upload implements UploadProcessor {
 
         try {
 
-            // Extracts zip file content using provided password
-
+            // Extracts zip file content using provided property password
             String password = getPasswordFromProperty(NAME_OF_PROPERTY);
 
             extractZip(multipartFile, password);

@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 public class UploadData {
     private final String filename;
     private final String rawLine;
-    private final String project;
+    private final String device;
     private LocalDateTime localDateTime;
 
     /**
@@ -17,13 +17,13 @@ public class UploadData {
      *
      * @param filename The name of the file the data originated from.
      * @param rawLine The raw text of the data line.
-     * @param project The name of the project associated with the data.
+     * @param device The name of the project associated with the data.
      * @param localDateTime The date and time associated with the data.
      */
-    public UploadData(String filename, String rawLine, String project, LocalDateTime localDateTime) {
+    public UploadData(String filename, String rawLine, String device, LocalDateTime localDateTime) {
         this.filename = filename;
         this.rawLine = rawLine;
-        this.project = project;
+        this.device = device;
         this.localDateTime = localDateTime;
     }
 
@@ -50,8 +50,8 @@ public class UploadData {
      *
      * @return The project name.
      */
-    public String getProject() {
-        return project;
+    public String getDevice() {
+        return device;
     }
 
     /**
@@ -82,7 +82,7 @@ public class UploadData {
         return "UploadData{" +
                 "filename='" + filename + '\'' +
                 ", rawLine='" + rawLine + '\'' +
-                ", project='" + project + '\'' +
+                ", device='" + device + '\'' +
                 ", localDateTime=" + localDateTime +
                 '}';
     }

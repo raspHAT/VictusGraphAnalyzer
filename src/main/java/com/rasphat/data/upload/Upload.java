@@ -1,48 +1,39 @@
 package com.rasphat.data.upload;
 
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.time.Duration;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 
 /**
  * Abstract class for uploading and processing files.
  */
 public abstract class Upload {
 
-    protected static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
-    protected static final String FILENAME = "VictusGraphAnalyzer.zip";
-    protected List<UploadData> uploadDataList = new ArrayList<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(Upload.class);
-    protected String project;
-    private static final String DATE_TIME_FORMAT = "M/d/yyyy h:mm:ss a";
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
-    private static final String DATE_TIME_REGEX = "\\d{1,2}/\\d{1,2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} [AP]M";
-    private static final Pattern PATTERN = Pattern.compile(DATE_TIME_REGEX);
+    private static final String FILENAME = "VictusGraphAnalyzer.zip";
+    private static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
+    private static String project = "";
+
     protected static SimpleRegression simpleRegression = new SimpleRegression();
+    protected static List<UploadData> uploadDataList = new ArrayList<>();
 
-
-
-    private static final Pattern DATE_PATTERN = Pattern.compile(
-            "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}.*?|" +
-                    "\\w{3} \\w{3}.+\\d{1,2} \\d{2}:\\d{2}:\\d{2} UTC \\d{4}.*?|" +
-                    "\\d{2}.\\d{2}.\\d{4} \\d{2}:\\d{2}:\\d{2}.\\d{3}.*?|" +
-                    "\\d{1,2}.\\d{1,2}.\\d{4} \\d{2}:\\d{2}:\\d{2}.\\d{3}.*?"
-    );
+    public static void setProject(String project) {
+        Upload.project = project;
+    }
 
     /**
      * Retrieves the password from the application.properties file for the specified property.
@@ -53,13 +44,13 @@ public abstract class Upload {
      * @throws RuntimeException If there's an IOException when loading application.properties.
      */
     protected String getPasswordFromProperty(String propertyName) {
-        project = propertyName;
+        setProject(propertyName);
         Properties properties = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("application.properties")) {
             properties.load(input);
             return properties.getProperty("app." + propertyName);
         } catch (IOException e) {
-            throw new RuntimeException("Could not load application.properties", e);
+            throw new RuntimeException("Upload.getPasswordFromProperty(): Failed to load application properties", e);
         }
     }
 
@@ -75,11 +66,7 @@ public abstract class Upload {
             createTempDirectory();
             File tempFile = transferFile(multipartFile);
 
-            if (!isValidZipFile(tempFile)) {
-                LOGGER.info("Not a zip file");
-                return;
-            }
-
+            // Checks if the specified file is a valid ZIP file.
             try (ZipFile zipFile = new ZipFile(tempFile)) {
                 if (zipFile.isEncrypted()) {
                     zipFile.setPassword(password.toCharArray());
@@ -88,23 +75,6 @@ public abstract class Upload {
             }
         } catch (IOException e) {
             LOGGER.error("Error extracting zip file: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Checks if the specified file is a valid ZIP file.
-     * If the file is a valid ZIP file, this method also logs whether the ZIP file is encrypted.
-     *
-     * @param file The file to be checked.
-     * @return True if the file is a valid ZIP file, false otherwise.
-     * @throws IOException If an error occurs while trying to close the ZipFile.
-     */
-    protected boolean isValidZipFile(File file) throws IOException {
-        try (ZipFile ignored = new ZipFile(file)) {
-            return true; // valid if no exception is thrown
-        } catch (ZipException e) {
-            LOGGER.error(file + " is not a valid ZIP file. Exception message: " + e.getMessage());
-            return false;
         }
     }
 
@@ -191,12 +161,14 @@ public abstract class Upload {
      */
     protected void processFile(File file, List<UploadData> uploadDataList) throws IOException {
         String filename = file.getName();
-        if (!isIgnoredFile(filename)) {
+        if (fileToLoad(filename)) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    LocalDateTime localDateTime = findDateTimeInString(line);
-                    uploadDataList.add(new UploadData(filename, line, project, localDateTime));
+                    if (filename.contains("Shell") || filename.contains("Sword") || filename.contains("messages")) {
+                        LocalDateTime localDateTime = UploadLocalDateTimeParser.findDateTimeInString(file, line);
+                        uploadDataList.add(new UploadData(filename, line, project, localDateTime));
+                    } else uploadDataList.add(new UploadData(filename, line, project, LocalDateTime.now()));
                 }
             }
         }
@@ -209,67 +181,17 @@ public abstract class Upload {
      * @param filename The filename to check.
      * @return True if the filename is ignored, false otherwise.
      */
-    private boolean isIgnoredFile(String filename) {
-        return filename.equals("VictusGraphAnalyzer.zip")
-                || filename.contains("Screenshot.png")
-                || filename.contains("crash")
-                || filename.contains("WebDiag.html")
-                || filename.contains(".DS_Store")
-                || filename.contains("Exception.txt")
-                || filename.contains("ToolBox")
-                || filename.contains(".xml");
-    }
-
-    /**
-     * Extracts the first date time string that matches a predefined set of formats from the given input string.
-     * This method applies a regular expression pattern to the input string to find any sequences of characters
-     * that match any of the predefined date time formats. If it finds a matching sequence, it parses the sequence
-     * into a LocalDateTime object and returns it.
-     * If no matching sequence is found, or if a found sequence cannot be parsed into a LocalDateTime object,
-     * this method throws a DateTimeParseException.
-     *
-     * @param input the string to search for a date time sequence
-     * @return the first LocalDateTime object found in the input string
-     * @throws DateTimeParseException if no date time sequence is found in the input string, or if a found sequence
-     *                                cannot be parsed into a LocalDateTime object
-     */
-    public LocalDateTime findDateTimeInString(String input) throws DateTimeParseException {
-        Matcher matcher = DATE_PATTERN.matcher(input);
-        if (matcher.find()) {
-            String matchedDate = matcher.group();
-            return parseDateTime(matchedDate);
-        }
-        throw new DateTimeParseException("Upload.findDateTimeInString(String input): No date in String fund: {}", input, 0);
-    }
-
-    /**
-     * Attempts to parse the given string into a LocalDateTime object by applying various date formats.
-     * This method attempts to transform the input string into a LocalDateTime object by iterating through various
-     * predefined date and time formats. It returns the first successfully created LocalDateTime object.
-     * If none of the predefined formats can successfully transform the input string into a LocalDateTime object,
-     * this method throws a DateTimeParseException.
-     *
-     * @param input the string to be parsed
-     * @return the LocalDateTime object that was created from the input string
-     * @throws DateTimeParseException if the input string cannot be transformed into a LocalDateTime object
-     */
-    protected LocalDateTime parseDateTime(String input) throws DateTimeParseException {
-        List<String> FORMATS = Arrays.asList(
-                "yyyy-MM-dd'T'HH:mm:ss.SSS",        // ASC Zeit
-                //"EEE MMM d HH:mm:ss zzz yyyy",      // WEBDIAG Zeit
-                "M/d/yyyy HH:mm:ss.SSS"          // GUI LOGS
-                //"M/d/yyyy HH:mm:ss.SSS"    // & OCT Logs
-        );
-
-        for (String format : FORMATS) {
-            try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
-                return LocalDateTime.parse(input, formatter);
-            } catch (DateTimeParseException e) {
-                LOGGER.error("parseDateTime, {} Error {}", format, e.getMessage());
-            }
-        }
-        throw new DateTimeParseException("No format match in inputString found: {}", input, 0);
+    private boolean fileToLoad(String filename) {
+        return     filename.contains("Shell")
+                || filename.contains("Sword")
+                || filename.contains("messages")
+                || filename.equals("HE2SOCT.log")
+                || filename.equals("Machine.xml")
+                || filename.equals("Sword.xml")
+                || filename.equals("SwordTesting.xml")
+                || filename.equals("SystemTest.xml")
+                || filename.equals("Toolbox.xml")
+                || filename.equals("WebDiag,html");
     }
 
     /**
