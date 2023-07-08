@@ -1,6 +1,8 @@
 package com.rasphat.data.upload;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Represents a single data item to be uploaded.
@@ -9,7 +11,9 @@ public class UploadData {
     private final String filename;
     private final String rawLine;
     private final String project;
-    private LocalDateTime localDateTime;
+    private LocalDateTime originalLocalDateTime;
+    private Duration duration;
+    private LocalDateTime correctedLocalDateTime;
 
     /**
      * Initializes a new instance of the UploadData class.
@@ -17,13 +21,15 @@ public class UploadData {
      * @param filename The name of the file the data originated from.
      * @param rawLine The raw text of the data line.
      * @param project The name of the project associated with the data.
-     * @param localDateTime The date and time associated with the data.
+     * @param originalLocalDateTime The date and time associated with the data.
      */
-    public UploadData(String filename, String rawLine, String project, LocalDateTime localDateTime) {
+    public UploadData(String filename, String rawLine, String project, LocalDateTime originalLocalDateTime, LocalDateTime correctedLocalDateTime, Duration duration) {
         this.filename = filename;
         this.rawLine = rawLine;
         this.project = project;
-        this.localDateTime = localDateTime;
+        this.originalLocalDateTime = originalLocalDateTime;
+        this.correctedLocalDateTime = correctedLocalDateTime;
+        this.duration = duration;
     }
 
     /**
@@ -58,17 +64,37 @@ public class UploadData {
      *
      * @return The date and time.
      */
-    public LocalDateTime getLocalDateTime() {
-        return localDateTime;
+    public LocalDateTime getOriginalLocalDateTime() {
+        return originalLocalDateTime;
     }
 
     /**
      * Sets the date and time associated with the data.
      *
-     * @param localDateTime The date and time to set.
+     * @param originalLocalDateTime The date and time to set.
      */
-    public void setLocalDateTime(LocalDateTime localDateTime) {
-        this.localDateTime = localDateTime;
+    public void setLocalDateTime(LocalDateTime originalLocalDateTime) {
+        this.originalLocalDateTime = originalLocalDateTime;
+    }
+
+    public void setOriginalLocalDateTime(LocalDateTime originalLocalDateTime) {
+        this.originalLocalDateTime = originalLocalDateTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getCorrectedLocalDateTime() {
+        return correctedLocalDateTime;
+    }
+
+    public void setCorrectedLocalDateTime(LocalDateTime correctedLocalDateTime) {
+        this.correctedLocalDateTime = correctedLocalDateTime;
     }
 
     /**
@@ -82,7 +108,7 @@ public class UploadData {
                 "filename='" + filename + '\'' +
                 ", rawLine='" + rawLine + '\'' +
                 ", project='" + project + '\'' +
-                ", localDateTime=" + localDateTime +
+                ", originalLocalDateTime=" + originalLocalDateTime +
                 '}';
     }
 
@@ -92,6 +118,14 @@ public class UploadData {
      * @return A string representing the upload data.
      */
     public String stringToSaveInFile() {
-        return localDateTime + " " + rawLine + "/t/t/t" + filename;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        String formattedDateTime = originalLocalDateTime.format(formatter);
+        StringBuilder adjustedFilename = new StringBuilder(filename.substring(0, Math.min(filename.length(), 10)));
+        // If filename is shorter than 10 characters, fill with spaces
+        while (adjustedFilename.length() < 10) {
+            adjustedFilename.append(" ");
+        }
+
+        return formattedDateTime + " " +adjustedFilename + " " + getDuration() + " " + getCorrectedLocalDateTime()+  " " + rawLine;
     }
 }

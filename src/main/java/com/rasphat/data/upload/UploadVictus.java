@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,9 +47,30 @@ public class UploadVictus extends Upload implements UploadProcessor {
         List<Duration> durationList = calculateDurationFromUploadDataList();
         Duration averageDuration = calculateAverageDuration(durationList);
 
+
+
+// Sort the list based on the absolute deviation from the average.
+        durationList.sort(Comparator.comparingLong(duration -> Math.abs(duration.toMillis() - averageDuration.toMillis())));
+
+// Print the first 10 durations.
+        LOGGER.info("First 10 durations by deviation from the average:");
+        for (int i = 0; i < Math.min(10, durationList.size()); i++) {
+            LOGGER.info(durationList.get(i).toString());
+        }
+
+// Print the last 10 durations.
+        LOGGER.info("Last 10 durations by deviation from the average:");
+        for (int i = Math.max(0, durationList.size() - 100); i < durationList.size(); i++) {
+            LOGGER.info(durationList.get(i).toString());
+        }
+
+
         LOGGER.info("Average Duration: {}", averageDuration);
 
         correctUploadDataLocalTimeDate(uploadDataList, averageDuration);
+
+        uploadDataList.sort(Comparator.comparing(UploadData::getOriginalLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
+
 
         return uploadDataList;
     }
@@ -60,7 +82,7 @@ public class UploadVictus extends Upload implements UploadProcessor {
     private void correctUploadDataLocalTimeDate(List<UploadData> uploadDataList, Duration averageDuration) {
         for (UploadData uploadData : uploadDataList) {
             if (uploadData.getFilename().contains("message")) {
-                uploadData.setLocalDateTime(uploadData.getLocalDateTime().plus(averageDuration));
+                uploadData.setLocalDateTime(uploadData.getOriginalLocalDateTime().minus(averageDuration));
             }
         }
     }
@@ -78,7 +100,7 @@ public class UploadVictus extends Upload implements UploadProcessor {
                 String dateTimeString = parseDateTimeString(uploadData.getRawLine());
                 if (dateTimeString != null) {
                     LocalDateTime localDateTime = LocalDateTime.parse(dateTimeString, FORMATTER);
-                    Duration duration = Duration.between(uploadData.getLocalDateTime(), localDateTime);
+                    Duration duration = Duration.between(uploadData.getOriginalLocalDateTime(), localDateTime);
                     durationList.add(duration);
                 }
             }
@@ -109,11 +131,30 @@ public class UploadVictus extends Upload implements UploadProcessor {
      * @return The average duration.
      */
     private static Duration calculateAverageDuration(List<Duration> durationList) {
+
+
+
+
         long totalNanos = durationList.stream()
                 .mapToLong(Duration::toNanos)
                 .sum();
 
+        // Min duration
+        durationList.stream()
+                .min(Comparator.comparingLong(Duration::toNanos))
+                .ifPresent(minDuration -> LOGGER.info("Min duration: " + minDuration));
+
+        // Max duration
+        durationList.stream()
+                .max(Comparator.comparingLong(Duration::toNanos))
+                .ifPresent(maxDuration -> LOGGER.info("Max duration: " + maxDuration));
+
+
         return Duration.ofNanos(Math.round(totalNanos / (double) durationList.size()));
     }
+
+
+
+
 
 }

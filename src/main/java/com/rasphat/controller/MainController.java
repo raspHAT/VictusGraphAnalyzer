@@ -1,7 +1,5 @@
 package com.rasphat.controller;
 
-import com.rasphat.data.portfolio.DateParser;
-import com.rasphat.data.portfolio.PortfolioOffset;
 import com.rasphat.data.upload.UploadData;
 import com.rasphat.data.upload.UploadFactory;
 import com.rasphat.data.upload.UploadProcessor;
@@ -14,17 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.sound.sampled.Port;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.List;
-
-import static com.rasphat.data.portfolio.PortfolioOffset.getCalculatedDuration;
 
 @Controller
 public class MainController implements ErrorController {
@@ -44,7 +36,12 @@ public class MainController implements ErrorController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
-    private static final File desktopVictusTxtFile = new File("C:\\Users\\PLAKINM\\OneDrive - Bausch & Lomb, Inc\\Desktop\\ANALYSER.txt");
+    private static final File windowsDesktopVictusTxtFile = new File("C:\\Users\\PLAKINM\\OneDrive - Bausch & Lomb, Inc\\Desktop\\ANALYSER.txt");
+
+    private static final File macOSDesktopVictusTxtFile = new File(System.getProperty("user.home") + "/Desktop/ANALYSER.txt");
+
+
+    private static final String os = System.getProperty("os.name").toLowerCase();
 
 
     @GetMapping("/")
@@ -88,20 +85,47 @@ public class MainController implements ErrorController {
                 LOGGER.info(String.valueOf(uploadDataList.get(1)));
                 LOGGER.info(String.valueOf(uploadDataList.get(uploadDataList.size()-1)));
                 LOGGER.info(String.valueOf(uploadDataList.get((uploadDataList.size()-1)/2)));
-                LOGGER.info("Upload successfully!");
                 //uploadDataList.stream()
-                  //      .filter(uploadData -> uploadData.getLocalDateTime() != null)
-                    //    .forEach(System.out::println);
+                //      .filter(uploadData -> uploadData.getLocalDateTime() != null)
+                //    .forEach(System.out::println);
 
-                try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(desktopVictusTxtFile.toPath()))) {
-                    uploadDataList.stream()
-                            .filter(uploadData -> uploadData.getLocalDateTime() != null)
-                            .map(UploadData::stringToSaveInFile)
-                            .forEach(writer::println);
-                } catch (IOException e) {
-                    LOGGER.error("Error writing to file: ", e);
+
+                if (os.contains("win")) {
+                    LOGGER.info("This is Windows");
+
+
+                    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(windowsDesktopVictusTxtFile.toPath()))) {
+                        uploadDataList.stream()
+                                .filter(uploadData -> uploadData.getOriginalLocalDateTime() != null)
+                                .map(UploadData::stringToSaveInFile)
+                                .forEach(writer::println);
+                    } catch (IOException e) {
+                        LOGGER.error("Error writing to file: ", e);
+                    }
+
+
+
+                } else if (os.contains("mac")) {
+                    LOGGER.info("This is Mac");
+
+
+
+
+                    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(macOSDesktopVictusTxtFile.toPath()))) {
+                        uploadDataList.stream()
+                                .filter(uploadData -> uploadData.getOriginalLocalDateTime() != null)
+                                .map(UploadData::stringToSaveInFile)
+                                .forEach(writer::println);
+                    } catch (IOException e) {
+                        LOGGER.error("Error writing to file: ", e);
+                    }
+
+                } else {
+                    LOGGER.info("Your OS is not supported");
+                    // Handle other operating systems
                 }
 
+                LOGGER.info("Upload successfully!");
 
 
                 /*

@@ -178,7 +178,7 @@ public abstract class Upload {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     LocalDateTime localDateTime = DateParser.findDateTimeInString(line);
-                    uploadDataList.add(new UploadData(filename, line, project, localDateTime));
+                    uploadDataList.add(new UploadData(filename, line, project, localDateTime, null, null));
                 }
             }
         }
