@@ -69,8 +69,8 @@ public class UploadLocalDateTimeParser {
         List<String> FORMATS = Arrays.asList(
                 "yyyy-MM-dd'T'HH:mm:ss.SSS",        // ASC Zeit
                 //"EEE MMM d HH:mm:ss zzz yyyy",      // WEBDIAG Zeit
-                "M/d/yyyy HH:mm:ss.SSS"          // GUI LOGS
-                //"M/d/yyyy HH:mm:ss.SSS"    // & OCT Logs
+                "M/d/yyyy HH:mm:ss.SSS",          // GUI LOGS
+                "MM/dd/yyyy HH:mm:ss.SSS"    // & OCT Logs
         );
 
         for (String format : FORMATS) {
