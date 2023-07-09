@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,9 +25,10 @@ import java.util.List;
 @Controller
 public class MainController implements ErrorController {
 
+    private static final String TEMP_LOGS_COMBINED = "TEMP_LOGS_COMBINED.txt";
+    private static final File MAC_OS_DESKTOP_VICTUS_TXT_FILE = new File(System.getProperty("user.home") + "/Desktop/" + TEMP_LOGS_COMBINED);
+    private static final File WINDOWS_DESKTOP_VICTUS_TXT_FILE = new File(System.getenv("USERPROFILE") + "\\OneDrive - Bausch & Lomb, Inc\\Desktop\\" + TEMP_LOGS_COMBINED);
     private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
-    private static final File WINDOWS_DESKTOP_VICTUS_TXT_FILE = new File("C:\\Users\\PLAKINM\\OneDrive - Bausch & Lomb, Inc\\Desktop\\ANALYSER.txt");
-    private static final File MAC_OS_DESKTOP_VICTUS_TXT_FILE = new File(System.getProperty("user.home") + "/Desktop/ANALYSER.txt");
     private static final String OS = System.getProperty("os.name").toLowerCase();
 
     /**
@@ -48,7 +48,8 @@ public class MainController implements ErrorController {
      * @return a string representing the path to the next page, depending on whether the upload was successful or not.
      */
     @PostMapping("/upload")
-    public String upload(@RequestParam("project") String project, @RequestParam("file") MultipartFile file) {
+    public String upload(@RequestParam("project") String project,
+                         @RequestParam("file") MultipartFile file) {
 
         if (file == null || file.isEmpty() || project == null || project.isEmpty()) {
             return "redirect:/error";
@@ -67,10 +68,9 @@ public class MainController implements ErrorController {
                 writeToFile(uploadDataList, MAC_OS_DESKTOP_VICTUS_TXT_FILE);
             } else {
                 LOGGER.info("Your OS is not supported");
-                // Handle other operating systems
+                return "redirect:/error";
             }
 
-            LOGGER.error("Exception in {}, method: {}(), line: {}", getClass().toString(), Thread.currentThread().getStackTrace()[1].getMethodName(), Thread.currentThread().getStackTrace()[1].getLineNumber());
             LOGGER.info("Upload successfully!");
 
             return "redirect:/success";

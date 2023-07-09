@@ -35,7 +35,7 @@ public class UploadVictus extends Upload implements UploadProcessor {
     @Override
     public List<UploadData> processUploadData(MultipartFile multipartFile) {
 
-        LOGGER.info("Processing upload data for {}", UploadVictus.class.getName());
+        LOGGER.info("Processing upload data for {}", getClass());
 
         try {
 

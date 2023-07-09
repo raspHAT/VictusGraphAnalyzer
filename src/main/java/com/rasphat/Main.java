@@ -4,9 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 /**
  * The main class of the application.
@@ -20,7 +17,7 @@ import java.util.Properties;
 @SpringBootApplication
 public class Main {
 
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     /**
      * The main() method is the starting point of the application.
@@ -33,8 +30,8 @@ public class Main {
      * @param args The command-line arguments passed to the application (not used in this example).
      */
     public static void main(String[] args) {
-        logger.info("Application initializing...");
+        LOGGER.info("Application initializing...");
         SpringApplication.run(Main.class);
-        logger.info("Application runs and runs and runs");
+        LOGGER.info("Application runs and runs and runs");
     }
 }
