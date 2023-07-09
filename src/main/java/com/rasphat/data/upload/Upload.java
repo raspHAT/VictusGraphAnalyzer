@@ -165,10 +165,18 @@ public abstract class Upload {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if (filename.contains("Shell") || filename.contains("Sword") || filename.contains("messages")) {
-                        LocalDateTime localDateTime = UploadLocalDateTimeParser.findDateTimeInString(file, line);
+                    if (filename.contains("Shell")
+                            || filename.contains("Sword")
+                            || filename.contains("messages")
+                            || filename.equals("HE2SOCT.log")
+                    ) {
+                        LocalDateTime localDateTime = UploadParser.findDateTimeInString(file, line);
+                        System.out.println("Jaba Daba Doo" + localDateTime);
                         uploadDataList.add(new UploadData(filename, line, project, localDateTime));
-                    } else uploadDataList.add(new UploadData(filename, line, project, LocalDateTime.now()));
+                    } else {
+                        System.out.println("Heutido" + file.getAbsolutePath());
+                        uploadDataList.add(new UploadData(filename, line, project, LocalDateTime.now()));
+                    }
                 }
             }
         }
@@ -191,7 +199,7 @@ public abstract class Upload {
                 || filename.equals("SwordTesting.xml")
                 || filename.equals("SystemTest.xml")
                 || filename.equals("Toolbox.xml")
-                || filename.equals("WebDiag,html");
+                || filename.equals("WebDiag.html");
     }
 
     /**
