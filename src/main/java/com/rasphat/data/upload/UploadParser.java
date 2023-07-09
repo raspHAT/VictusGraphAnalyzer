@@ -90,7 +90,7 @@ public class UploadParser {
                 //DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_ASC);
 
-                System.out.println(";;;;;''''fekfjrjgjriggroi/>>>>>>>>>>"+LocalDateTime.parse(input, formatter));
+                //System.out.println(";;;;;''''fekfjrjgjriggroi/>>>>>>>>>>"+LocalDateTime.parse(input, formatter));
                 return LocalDateTime.parse(input, formatter);
             } catch (DateTimeParseException e) {
                 LOGGER.error("parseDateTime, {} Error {}", DateTimeFormatter.ISO_DATE_TIME, e.getMessage());

@@ -22,7 +22,7 @@ public class UploadTeneo extends Upload implements UploadProcessor {
 
         extractZip(multipartFile, getPasswordFromProperty(NAME_OF_PROPERTY));
 
-        deleteTempDirectory();
+        //deleteTempDirectory();
 
         return uploadDataList;
     }

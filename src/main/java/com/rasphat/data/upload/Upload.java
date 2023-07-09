@@ -24,8 +24,8 @@ import java.util.Properties;
 public abstract class Upload {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Upload.class);
-    private static final String FILENAME = "GraphAnalyserTempArchive.zip";
-    private static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "GraphAnalyzer" + File.separator;
+    private static final String FILENAME = "VictusGraphAnalyzer.zip";
+    private static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
     private static String project = "";
 
     protected static SimpleRegression simpleRegression = new SimpleRegression();

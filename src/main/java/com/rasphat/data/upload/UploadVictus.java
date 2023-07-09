@@ -35,12 +35,15 @@ public class UploadVictus extends Upload implements UploadProcessor {
     @Override
     public List<UploadData> processUploadData(MultipartFile multipartFile) {
 
-        LOGGER.info("Processing upload data for {}", getClass());
+        LOGGER.info("@MP Processing upload data from: {}", getClass());
 
         try {
 
             // Extracts zip file content using provided property password
             String password = getPasswordFromProperty(NAME_OF_PROPERTY);
+
+            // Create the temp folder with shutdown hook
+            createTempDirectory();
 
             extractZip(multipartFile, password);
 
