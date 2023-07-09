@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -69,12 +70,18 @@ public class MainController implements ErrorController {
                 // Handle other operating systems
             }
 
+            LOGGER.error("Exception in {}, method: {}(), line: {}", getClass().toString(), Thread.currentThread().getStackTrace()[1].getMethodName(), Thread.currentThread().getStackTrace()[1].getLineNumber());
             LOGGER.info("Upload successfully!");
 
             return "redirect:/success";
 
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("Exception in {}, method: {}(), line: {}",
+                    getClass().toString(),
+                    Thread.currentThread().getStackTrace()[1].getMethodName(),
+                    Thread.currentThread().getStackTrace()[1].getLineNumber()
+            );
+            LOGGER.error("getMessage(): " + e.getMessage());
             return "redirect:/error";
         }
     }
