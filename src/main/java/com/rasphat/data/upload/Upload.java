@@ -63,7 +63,7 @@ public abstract class Upload {
      */
     protected void extractZip(MultipartFile multipartFile, String password) {
         try {
-            createTempDirectory();
+            //createTempDirectory();
             File tempFile = transferFile(multipartFile);
 
             // Checks if the specified file is a valid ZIP file.
@@ -86,12 +86,28 @@ public abstract class Upload {
     protected void createTempDirectory() throws IOException {
         File tempDirectory = new File(TEMP_DIR_PATH);
         LOGGER.info(tempDirectory.getAbsolutePath());
+        registerShutdownHook(tempDirectory);
         if (!tempDirectory.exists()) {
             if (!tempDirectory.mkdirs()) {
                 LOGGER.error("Failed to create directory: " + TEMP_DIR_PATH);
             }
         }
     }
+
+    protected void registerShutdownHook(File file) {
+        LOGGER.info("Shutdown hook: " + file);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                System.out.println("Ich werde ausgefuehrt!");
+                LOGGER.info("Temporary file successfully deleted.");
+                FileUtils.deleteDirectory(file);
+                LOGGER.info("Temporary file successfully deleted.123");
+            } catch (IOException e) {
+                LOGGER.error("Error deleting the temporary file: " + e.getMessage());
+            }
+        }));
+    }
+
 
     /**
      * Transfers the MultipartFile to a temporary file.
@@ -171,10 +187,10 @@ public abstract class Upload {
                             || filename.equals("HE2SOCT.log")
                     ) {
                         LocalDateTime localDateTime = UploadParser.findDateTimeInString(file, line);
-                        System.out.println("Jaba Daba Doo" + localDateTime);
+                        //System.out.println("Jaba Daba Doo" + localDateTime);
                         uploadDataList.add(new UploadData(filename, line, project, localDateTime));
                     } else {
-                        System.out.println("Heutido" + file.getAbsolutePath());
+                        //System.out.println("Heutido" + file.getAbsolutePath());
                         uploadDataList.add(new UploadData(filename, line, project, LocalDateTime.now()));
                     }
                 }
