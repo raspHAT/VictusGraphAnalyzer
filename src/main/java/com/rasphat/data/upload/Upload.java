@@ -94,14 +94,19 @@ public abstract class Upload {
         }
     }
 
+    /**
+     * Registers a shutdown hook that attempts to delete a specified file or directory
+     * during program shutdown.
+     *
+     * @param file The file or directory to be deleted during shutdown.
+     */
     protected void registerShutdownHook(File file) {
         LOGGER.info("Shutdown hook: " + file);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                System.out.println("Ich werde ausgefuehrt!");
-                LOGGER.info("Temporary file successfully deleted.");
+                LOGGER.info("Shutdown program, attempting to delete all temporary files.");
+                LOGGER.info("Consider the deletion successful if no errors are reported after this log message!");
                 FileUtils.deleteDirectory(file);
-                LOGGER.info("Temporary file successfully deleted.123");
             } catch (IOException e) {
                 LOGGER.error("Error deleting the temporary file: " + e.getMessage());
             }
@@ -173,29 +178,24 @@ public abstract class Upload {
      *
      * @param file The file to process.
      * @param uploadDataList The list to add the UploadData objects to.
-     * @throws IOException If an I/O error occurs.
      */
-    protected void processFile(File file, List<UploadData> uploadDataList) throws IOException {
-        String filename = file.getName();
-        if (fileToLoad(filename)) {
+    protected void processFile(File file, List<UploadData> uploadDataList) {
+        //System.out.println(file.getAbsolutePath());
+        //String filename = file.getName();
+        //if (fileToLoad(filename)) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if (filename.contains("Shell")
-                            || filename.contains("Sword")
-                            || filename.contains("messages")
-                            || filename.equals("HE2SOCT.log")
-                    ) {
-                        LocalDateTime localDateTime = UploadParser.findDateTimeInString(file, line);
+
+                    //LocalDateTime localDateTime = UploadParser.findDateTimeInString(file, line);
                         //System.out.println("Jaba Daba Doo" + localDateTime);
-                        uploadDataList.add(new UploadData(filename, line, project, localDateTime));
-                    } else {
-                        //System.out.println("Heutido" + file.getAbsolutePath());
-                        uploadDataList.add(new UploadData(filename, line, project, LocalDateTime.now()));
-                    }
-                }
+                    uploadDataList.add(new UploadData(file.getName(), line, project, null));
+
+            //    }
             }
-        }
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            }
     }
 
     /**
@@ -216,24 +216,5 @@ public abstract class Upload {
                 || filename.equals("SystemTest.xml")
                 || filename.equals("Toolbox.xml")
                 || filename.equals("WebDiag.html");
-    }
-
-    /**
-     * Deletes the temporary directory and its contents if it exists.
-     */
-    protected void deleteTempDirectory() {
-        File tempDirectory = new File(TEMP_DIR_PATH);
-
-        if (!tempDirectory.exists()) {
-            // Directory doesn't exist, nothing to delete
-            return;
-        }
-
-        try {
-            FileUtils.deleteDirectory(tempDirectory);
-            LOGGER.info("Temporary directory deleted: " + TEMP_DIR_PATH);
-        } catch (IOException e) {
-            LOGGER.error("Error deleting temporary directory: " + e.getMessage());
-        }
     }
 }

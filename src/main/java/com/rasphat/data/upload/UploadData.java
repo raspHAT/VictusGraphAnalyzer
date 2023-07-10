@@ -93,15 +93,18 @@ public class UploadData {
      * @return A string representing the upload data.
      */
     public String stringToSaveInFile() {
+        String formattedDateTime;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-        String formattedDateTime = localDateTime.format(formatter);
-        //StringBuilder adjustedFilename = new StringBuilder(filename.substring(0, Math.min(filename.length(), 10)));
+        if ( localDateTime != null) {
+            formattedDateTime= localDateTime.format(formatter);
+        } else formattedDateTime = null;
+        StringBuilder adjustedFilename = new StringBuilder(filename.substring(0, Math.min(filename.length(), 60)));
         // If filename is shorter than 10 characters, fill with spaces
-        //while (adjustedFilename.length() < 10) {
-          //  adjustedFilename.append(" ");
+        while (adjustedFilename.length() < 60) {
+            adjustedFilename.append(" ");}
 
 
         //return formattedDateTime + " " + adjustedFilename +  " " + rawLine;
-    return formattedDateTime + " " + rawLine;
+    return formattedDateTime + " " + adjustedFilename + " " + rawLine;
     }
 }

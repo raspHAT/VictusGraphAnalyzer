@@ -60,6 +60,7 @@ public class MainController implements ErrorController {
             UploadProcessor uploadProcessor = uploadFactory.getUploadProcessor(project);
             List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
 
+            LOGGER.info(String.valueOf(uploadDataList.size()));
             if (isOSWindows()) {
                 LOGGER.info("This is Windows");
                 writeToFile(uploadDataList, WINDOWS_DESKTOP_VICTUS_TXT_FILE);
@@ -94,7 +95,7 @@ public class MainController implements ErrorController {
     private void writeToFile(List<UploadData> uploadDataList, File file) {
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(file.toPath()))) {
             uploadDataList.stream()
-                    .filter(uploadData -> uploadData.getLocalDateTime() != null)
+                    //.filter(uploadData -> uploadData.getLocalDateTime() != null)
                     .map(UploadData::stringToSaveInFile)
                     .forEach(writer::println);
         } catch (IOException e) {

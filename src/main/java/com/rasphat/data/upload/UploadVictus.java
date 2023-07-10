@@ -51,7 +51,7 @@ public class UploadVictus extends Upload implements UploadProcessor {
             uploadDataList = processFiles();
 
             // Perform regression analysis on the data
-            calculateRegression(processUploadDataList(uploadDataList));
+            //calculateRegression(processUploadDataList(uploadDataList));
 
             LOGGER.info("R square {}", simpleRegression.getRSquare());
 
@@ -59,16 +59,16 @@ public class UploadVictus extends Upload implements UploadProcessor {
             LOGGER.error("An error occurred while processing files. {}" , e.getMessage());
         }
 
-        // Adjust the datetime for specific lines of data
+/*        // Adjust the datetime for specific lines of data
         uploadDataList
                 .forEach(data -> {
                     if (data.getFilename().contains("messages") && data.getRawLine().contains("asc28")) {
                         data.setLocalDateTime(UploadParser.correctDateTime(data.getLocalDateTime()));
                     }
-                });
+                });*/
 
         // Sort the data by datetime
-        uploadDataList.sort(Comparator.comparing(UploadData::getLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
+        //uploadDataList.sort(Comparator.comparing(UploadData::getLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
 
         // Return the processed list of data
         return uploadDataList;
