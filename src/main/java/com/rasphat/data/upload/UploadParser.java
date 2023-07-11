@@ -4,7 +4,9 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import java.io.File;
+import java.util.List;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -12,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class UploadParser {
 
@@ -29,6 +32,73 @@ public class UploadParser {
                     "\\d{2}.\\d{2}.\\d{4} \\d{2}:\\d{2}:\\d{2}.\\d{3}.*?|" +
                     "\\d{1,2}.\\d{1,2}.\\d{4} \\d{2}:\\d{2}:\\d{2}.\\d{3}.*?"
     );
+
+
+    public static void filterAndExtractDateTimeAsc(List<UploadData> uploadDataList) {
+        Pattern pattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}.*?");
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+
+        uploadDataList.stream()
+                .filter(data -> data.getFilename().contains("message"))
+                .forEach(data -> {
+                    Matcher matcher = pattern.matcher(data.getRawLine());
+                    if (matcher.find()) {
+                        String dateTimeString = matcher.group();
+                        LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, formatter);
+                        data.setLocalDateTime(dateTime);
+                    }
+                });
+    }
+
+
+    public static void filterAndExtractDateTimeGui(List<UploadData> uploadDataList) {
+        Pattern pattern = Pattern.compile( "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}.\\d{3}.*?");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss.SSS");
+
+        uploadDataList.stream()
+                .filter(data -> (
+                        data.getFilename().contains("Sword" )
+                        || data.getFilename().contains("ToolBox" )
+                        || data.getFilename().contains("Shell" )
+                ))
+                .forEach(data -> {
+                    Matcher matcher = pattern.matcher(data.getRawLine());
+                    if (matcher.find()) {
+                        String dateTimeString = matcher.group();
+                        LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, formatter);
+                        data.setLocalDateTime(dateTime);
+                    }
+                });
+    }
+
+    public static void filterAndExtractDateTimeOct(List<UploadData> uploadDataList) {
+        Pattern pattern = Pattern.compile( "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}.\\d{3}");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss.SSS");
+
+        uploadDataList.stream()
+                .filter(data -> (
+                        data.getFilename().contains("HE2SOCT" )
+                ))
+                .forEach(data -> {
+                    Matcher matcher = pattern.matcher(data.getRawLine());
+                    if (matcher.find()) {
+                        String dateTimeString = matcher.group();
+                        LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, formatter);
+                        data.setLocalDateTime(dateTime);
+                    }
+                });
+    }
+
+    public static void filterAndExtractDateTime(List<UploadData> uploadDataList) {
+        uploadDataList.forEach(data -> {
+            if (data.getLocalDateTime() == null) {
+                data.setLocalDateTime(LocalDateTime.now());
+            }
+        });
+    }
+
+
+
 
     /**
      * Extracts the first date time string that matches a predefined set of formats from the given input string.

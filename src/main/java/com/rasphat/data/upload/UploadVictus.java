@@ -5,10 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,11 +44,18 @@ public class UploadVictus extends Upload implements UploadProcessor {
         // Process extracted files and store in uploadDataList
         processFiles();
 
-        // Perform regression analysis on the data
-        // calculateRegression(processUploadDataList(uploadDataList));
+
+        UploadParser.filterAndExtractDateTimeAsc(uploadDataList);
+        UploadParser.filterAndExtractDateTimeGui(uploadDataList);
+        UploadParser.filterAndExtractDateTimeOct(uploadDataList);
+        UploadParser.filterAndExtractDateTime(uploadDataList);
 
         // Sort the data by datetime
-        // uploadDataList.sort(Comparator.comparing(UploadData::getLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
+        uploadDataList.sort(Comparator.comparing(UploadData::getLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
+
+        // Perform regression analysis on the data
+        calculateRegression(processUploadDataList(uploadDataList));
+
 
     }
 
