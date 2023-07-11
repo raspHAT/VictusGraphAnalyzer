@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,68 +16,47 @@ import java.util.stream.Collectors;
 
 /**
  * Handles the uploading of data specific to the 'Victus' upload type.
- * Extends the abstract class 'Upload' and implements 'UploadProcessor' interface.
+ * Extends the abstract class 'Upload' and implements the 'UploadProcessor' interface.
  */
 public class UploadVictus extends Upload implements UploadProcessor {
 
     private static final String NAME_OF_PROPERTY = UploadType.VICTUS.name();
     private static final Logger LOGGER = LoggerFactory.getLogger(UploadVictus.class);
 
+
     /**
-     * Process the upload data.
-     * This method receives a MultipartFile as input and process it by extracting,
-     * loading and sorting the data. It also handles exceptions and logs important information.
+     * Processes the upload data specific to the 'Victus' upload type.
      *
      * @param multipartFile The data to upload.
-     * @return A list of UploadData objects representing the processed data.
      */
     @Override
-    public List<UploadData> processUploadData(MultipartFile multipartFile) {
+    public void processUploadData(MultipartFile multipartFile) {
+        LOGGER.info("Processing upload data from: {}", getClass());
 
-        LOGGER.info("@MP Processing upload data from: {}", getClass());
+        // Extracts zip file content using the provided property password
+        String password = getPasswordFromProperty(NAME_OF_PROPERTY);
 
-        try {
+        // Create the temp folder with a shutdown hook
+        createTempDirectory();
 
-            // Extracts zip file content using provided property password
-            String password = getPasswordFromProperty(NAME_OF_PROPERTY);
+        extractZip(multipartFile, password);
 
-            // Create the temp folder with shutdown hook
-            createTempDirectory();
+        // Process extracted files and store in uploadDataList
+        processFiles();
 
-            extractZip(multipartFile, password);
-
-            // Process extracted files and stores in uploadDataList
-            uploadDataList = processFiles();
-
-            // Perform regression analysis on the data
-            //calculateRegression(processUploadDataList(uploadDataList));
-
-            LOGGER.info("R square {}", simpleRegression.getRSquare());
-
-        } catch (IOException e) {
-            LOGGER.error("An error occurred while processing files. {}" , e.getMessage());
-        }
-
-/*        // Adjust the datetime for specific lines of data
-        uploadDataList
-                .forEach(data -> {
-                    if (data.getFilename().contains("messages") && data.getRawLine().contains("asc28")) {
-                        data.setLocalDateTime(UploadParser.correctDateTime(data.getLocalDateTime()));
-                    }
-                });*/
+        // Perform regression analysis on the data
+        // calculateRegression(processUploadDataList(uploadDataList));
 
         // Sort the data by datetime
-        //uploadDataList.sort(Comparator.comparing(UploadData::getLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
+        // uploadDataList.sort(Comparator.comparing(UploadData::getLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
 
-        // Return the processed list of data
-        return uploadDataList;
     }
 
     /**
-     * This method processes a list of UploadData objects, extracts "DMS" filenames, calculates the duration between
+     * Processes a list of UploadData objects, extracts "DMS" filenames, calculates the duration between
      * the rawLine LocalDateTime and the UploadData LocalDateTime, and stores the result in a map.
      *
-     * @param uploadDataList A list of UploadData objects to process.
+     * @param uploadDataList The list of UploadData objects to process.
      * @return A map with LocalDateTime keys and Duration values. Each entry represents a LocalDateTime and the
      *         duration between it and another LocalDateTime extracted from the same UploadData object.
      */
@@ -92,7 +70,8 @@ public class UploadVictus extends Upload implements UploadProcessor {
         Map<LocalDateTime, Duration> dateTimeDurationMap = new HashMap<>();
 
         for (UploadData uploadData : filteredList) {
-            LocalDateTime fromRawLine = UploadParser.extractLocalDateTimeFromRawLine(uploadData.getRawLine()); // Your method to extract LocalDateTime from rawLine
+            // Your method to extract LocalDateTime from rawLine
+            LocalDateTime fromRawLine = UploadParser.extractLocalDateTimeFromRawLine(uploadData.getRawLine());
             LocalDateTime fromUploadData = uploadData.getLocalDateTime();
 
             // Calculating the duration between the two dates
@@ -106,15 +85,13 @@ public class UploadVictus extends Upload implements UploadProcessor {
     }
 
     /**
-     * This method performs simple linear regression on a provided map
-     * that has LocalDateTime as keys and Duration as values.
+     * Performs simple linear regression on a provided map that has LocalDateTime as keys and Duration as values.
      *
-     * @param timestampsDurationsMap A map with LocalDateTime keys and Duration values.
+     * @param timestampsDurationsMap The map with LocalDateTime keys and Duration values.
      *                               Each entry represents a timestamp and the duration associated with it.
-     * @throws IllegalArgumentException if the input map is null or empty.
+     * @throws IllegalArgumentException If the input map is null or empty.
      */
     protected void calculateRegression(Map<LocalDateTime, Duration> timestampsDurationsMap) {
-
         // Check if map is null or empty
         if (timestampsDurationsMap == null || timestampsDurationsMap.isEmpty()) {
             throw new IllegalArgumentException("Invalid input map");
@@ -128,11 +105,25 @@ public class UploadVictus extends Upload implements UploadProcessor {
 
             regression.addData(timestampAsEpochSecond, durationAsSeconds);
         }
-        simpleRegression = regression;
-        //return regression;
     }
 
-
-
-
+    /**
+     * Checks if the given filename is one of the ignored filenames.
+     * The ignored filenames contain "VictusGraphAnalyzer.zip", "Screenshot.png", and any filename containing "crash".
+     *
+     * @param filename The filename to check.
+     * @return True if the filename is ignored, false otherwise.
+     */
+    private boolean fileToLoad(String filename) {
+        return filename.contains("Shell")
+                || filename.contains("Sword")
+                || filename.contains("messages")
+                || filename.equals("HE2SOCT.log")
+                || filename.equals("Machine.xml")
+                || filename.equals("Sword.xml")
+                || filename.equals("SwordTesting.xml")
+                || filename.equals("SystemTest.xml")
+                || filename.equals("Toolbox.xml")
+                || filename.equals("WebDiag.html");
+    }
 }

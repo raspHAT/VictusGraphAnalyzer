@@ -9,21 +9,21 @@ import java.time.format.DateTimeFormatter;
 public class UploadData {
     private final String filename;
     private final String rawLine;
-    private final String device;
+    private final String project;
     private LocalDateTime localDateTime;
 
     /**
      * Initializes a new instance of the UploadData class.
      *
-     * @param filename The name of the file the data originated from.
-     * @param rawLine The raw text of the data line.
-     * @param device The name of the project associated with the data.
+     * @param filename      The name of the file the data originated from.
+     * @param rawLine       The raw text of the data line.
+     * @param project        The name of the project associated with the data.
      * @param localDateTime The date and time associated with the data.
      */
-    public UploadData(String filename, String rawLine, String device, LocalDateTime localDateTime) {
+    public UploadData(String filename, String rawLine, String project, LocalDateTime localDateTime) {
         this.filename = filename;
         this.rawLine = rawLine;
-        this.device = device;
+        this.project = project;
         this.localDateTime = localDateTime;
     }
 
@@ -50,14 +50,14 @@ public class UploadData {
      *
      * @return The project name.
      */
-    public String getDevice() {
-        return device;
+    public String getProject() {
+        return project;
     }
 
     /**
-     * SGts the date and time associated with the data.
+     * Gets the date and time associated with the data.
      *
-     * @return The date and time to set.
+     * @return The date and time.
      */
     public LocalDateTime getLocalDateTime() {
         return localDateTime;
@@ -82,29 +82,28 @@ public class UploadData {
         return "UploadData{" +
                 "filename='" + filename + '\'' +
                 ", rawLine='" + rawLine + '\'' +
-                ", device='" + device + '\'' +
+                ", device='" + project + '\'' +
                 ", localDateTime=" + localDateTime +
                 '}';
     }
 
     /**
-     * Returns a string representation of the upload data.
+     * Returns a formatted string representation of the upload data to be saved in a file.
      *
-     * @return A string representing the upload data.
+     * @return A formatted string representing the upload data.
      */
     public String stringToSaveInFile() {
         String formattedDateTime;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-        if ( localDateTime != null) {
-            formattedDateTime= localDateTime.format(formatter);
-        } else formattedDateTime = null;
+        if (localDateTime != null) {
+            formattedDateTime = localDateTime.format(formatter);
+        } else {
+            formattedDateTime = null;
+        }
         StringBuilder adjustedFilename = new StringBuilder(filename.substring(0, Math.min(filename.length(), 60)));
-        // If filename is shorter than 10 characters, fill with spaces
         while (adjustedFilename.length() < 60) {
-            adjustedFilename.append(" ");}
-
-
-        //return formattedDateTime + " " + adjustedFilename +  " " + rawLine;
-    return formattedDateTime + " " + adjustedFilename + " " + rawLine;
+            adjustedFilename.append(" ");
+        }
+        return formattedDateTime + " " + project + " " + adjustedFilename + " " + rawLine;
     }
 }

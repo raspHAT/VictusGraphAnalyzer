@@ -1,8 +1,6 @@
 package com.rasphat.controller;
 
-import com.rasphat.data.upload.UploadData;
-import com.rasphat.data.upload.UploadFactory;
-import com.rasphat.data.upload.UploadProcessor;
+import com.rasphat.data.upload.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -12,24 +10,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.util.List;
 
 /**
  * MainController class handles the file uploading process and delegates the data processing to UploadProcessor.
  * It also takes care of differentiating the operating system and writing output to the appropriate location.
  */
 @Controller
-public class MainController implements ErrorController {
+public class MainController extends Upload implements ErrorController {
 
-    private static final String TEMP_LOGS_COMBINED = "TEMP_LOGS_COMBINED.txt";
-    private static final File MAC_OS_DESKTOP_VICTUS_TXT_FILE = new File(System.getProperty("user.home") + "/Desktop/" + TEMP_LOGS_COMBINED);
-    private static final File WINDOWS_DESKTOP_VICTUS_TXT_FILE = new File(System.getenv("USERPROFILE") + "\\OneDrive - Bausch & Lomb, Inc\\Desktop\\" + TEMP_LOGS_COMBINED);
     private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
-    private static final String OS = System.getProperty("os.name").toLowerCase();
 
     /**
      * Serves the index.html page.
@@ -56,21 +48,12 @@ public class MainController implements ErrorController {
         }
 
         try {
+            Upload.setProject(project);
             UploadFactory uploadFactory= new UploadFactory();
             UploadProcessor uploadProcessor = uploadFactory.getUploadProcessor(project);
-            List<UploadData> uploadDataList = uploadProcessor.processUploadData(file);
+            uploadProcessor.processUploadData(file);
 
-            LOGGER.info(String.valueOf(uploadDataList.size()));
-            if (isOSWindows()) {
-                LOGGER.info("This is Windows");
-                writeToFile(uploadDataList, WINDOWS_DESKTOP_VICTUS_TXT_FILE);
-            } else if (isOSMac()) {
-                LOGGER.info("This is Mac");
-                writeToFile(uploadDataList, MAC_OS_DESKTOP_VICTUS_TXT_FILE);
-            } else {
-                LOGGER.info("Your OS is not supported");
-                return "redirect:/error";
-            }
+            writeToFile();
 
             LOGGER.info("Upload successfully!");
 
@@ -85,38 +68,6 @@ public class MainController implements ErrorController {
             LOGGER.error("getMessage(): " + e.getMessage());
             return "redirect:/error";
         }
-    }
-
-    /**
-     * Helper method to write data to a specific file.
-     * @param uploadDataList represents the list of UploadData to write.
-     * @param file represents the file to write to.
-     */
-    private void writeToFile(List<UploadData> uploadDataList, File file) {
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(file.toPath()))) {
-            uploadDataList.stream()
-                    //.filter(uploadData -> uploadData.getLocalDateTime() != null)
-                    .map(UploadData::stringToSaveInFile)
-                    .forEach(writer::println);
-        } catch (IOException e) {
-            LOGGER.error("Error writing to file: ", e);
-        }
-    }
-
-    /**
-     * Helper method to check if the operating system is Windows.
-     * @return true if the operating system is Windows, false otherwise.
-     */
-    private boolean isOSWindows() {
-        return OS.contains("win");
-    }
-
-    /**
-     * Helper method to check if the operating system is Mac.
-     * @return true if the operating system is Mac, false otherwise.
-     */
-    private boolean isOSMac() {
-        return OS.contains("mac");
     }
 
     /**
@@ -135,5 +86,18 @@ public class MainController implements ErrorController {
     @GetMapping("/error")
     public String error() {
         return "error.html";
+    }
+
+    /**
+     * Helper method to write data to a specific file.
+     */
+    public void writeToFile() {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(UploadConstants.COMBINED_LOGS_TEMP_FOLDER.toPath()))) {
+            uploadDataList.stream()
+                    .map(UploadData::stringToSaveInFile)
+                    .forEach(writer::println);
+        } catch (IOException e) {
+            LOGGER.error("Error writing to file: ", e);
+        }
     }
 }

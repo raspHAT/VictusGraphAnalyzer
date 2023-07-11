@@ -1,5 +1,6 @@
 package com.rasphat.data.upload;
 
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,8 +10,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +21,7 @@ public class UploadParser {
     private static final String DATE_TIME_REGEX = "\\d{1,2}/\\d{1,2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} [AP]M";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
     private static final Pattern PATTERN = Pattern.compile(DATE_TIME_REGEX);
+    protected static SimpleRegression simpleRegression = new SimpleRegression();
 
     static final Pattern DATE_PATTERN = Pattern.compile(
             "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}.*?|" +
@@ -72,13 +72,6 @@ public class UploadParser {
      */
     protected static LocalDateTime parseDateTime(File file, String input) {
 
-/*        List<String> FORMATS = Arrays.asList(
-                "yyyy-MM-dd'T'HH:mm:ss.SSS",        // ASC Zeit
-                //"EEE MMM d HH:mm:ss zzz yyyy",      // WEBDIAG Zeit
-                "M/d/yyyy HH:mm:ss.SSS",          // GUI LOGS
-                "MM/dd/yyyy HH:mm:ss.SSS"    // & OCT Logs
-        );*/
-
         String FORMAT_ASC =         "yyyy-MM-dd'T'HH:mm:ss.SSS";               // ASC time
         String FORMAT_ISO =         String.valueOf(DateTimeFormatter.ISO_DATE_TIME);
         String FORMAT_WEBDIAG =     "EEE MMM d HH:mm:ss zzz yyyy";           // WEBDIAG time
@@ -96,8 +89,7 @@ public class UploadParser {
                 LOGGER.error("parseDateTime, {} Error {}", DateTimeFormatter.ISO_DATE_TIME, e.getMessage());
                 return LocalDateTime.of(1970,1, 1,0,0,0);
             }
-        }
-        else if (file.getName().contains("WebDiag")) {
+        } else if (file.getName().contains("WebDiag")) {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_WEBDIAG);
                 return LocalDateTime.parse(input, formatter);
@@ -105,8 +97,7 @@ public class UploadParser {
                 LOGGER.error("parseDateTime, {} Error {}", FORMAT_WEBDIAG, e.getMessage());
                 return LocalDateTime.of(1970,1, 1,0,0,0);
             }
-        }
-        else if (file.getName().contains("Sword")
+        } else if (file.getName().contains("Sword")
                 || file.getName().contains("Shell")) {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_GUI);
@@ -115,8 +106,7 @@ public class UploadParser {
                 LOGGER.error("parseDateTime, {} Error {}", FORMAT_GUI, e.getMessage());
                 return LocalDateTime.of(1970,1, 1,0,0,0);
             }
-        }
-        else if (file.getName().contains("HE2SOCT")) {
+        } else if (file.getName().contains("HE2SOCT")) {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMAT_OCT);
                 return LocalDateTime.parse(input, formatter);
@@ -163,7 +153,7 @@ public class UploadParser {
         long originalMilliseconds = dateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
 
         // Predict the offset in milliseconds using SimpleRegression
-        long offsetMilliseconds = (long) Upload.simpleRegression.predict(originalMilliseconds);
+        long offsetMilliseconds = (long) simpleRegression.predict(originalMilliseconds);
 
         // Correct the original LocalDateTime by the predicted offset and return
         return dateTime.minus(Duration.ofMillis(offsetMilliseconds));

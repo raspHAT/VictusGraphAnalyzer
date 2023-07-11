@@ -1,22 +1,18 @@
 package com.rasphat.data.upload;
 
 import net.lingala.zip4j.ZipFile;
-import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.IOException;
-import java.time.LocalDateTime;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
 
 /**
  * Abstract class for uploading and processing files.
@@ -24,34 +20,48 @@ import java.util.Properties;
 public abstract class Upload {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Upload.class);
-    private static final String FILENAME = "VictusGraphAnalyzer.zip";
-    private static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "VictusGraphAnalyzer" + File.separator;
-    private static String project = "";
 
-    protected static SimpleRegression simpleRegression = new SimpleRegression();
-    protected static List<UploadData> uploadDataList = new ArrayList<>();
+    private static String project = "TO_BE_SET";
+    private static String multiFileName = project + "_GraphAnalyzer.zip";
 
-    public static void setProject(String project) {
+    protected static final List<UploadData> uploadDataList = new ArrayList<>();
+
+    protected static void setProject(String project) {
         Upload.project = project;
+        multiFileName = project + "_GraphAnalyzer.zip";
+    }
+
+    protected static String getProject() {
+        return project;
+    }
+
+    protected static String getMultiFileName() {
+        return multiFileName;
     }
 
     /**
      * Retrieves the password from the application.properties file for the specified property.
-     * The name of the property is given as a parameter.
      *
      * @param propertyName The name of the property for which the password is to be retrieved.
-     * @return The password associated with the property in the application.properties file.
+     * @return The password associated with the property in the application.properties file, or a default value if not found.
      * @throws RuntimeException If there's an IOException when loading application.properties.
      */
     protected String getPasswordFromProperty(String propertyName) {
         setProject(propertyName);
         Properties properties = new Properties();
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("application.properties")) {
-            properties.load(input);
-            return properties.getProperty("app." + propertyName);
+        try {
+            ClassLoader classLoader = Upload.class.getClassLoader();
+            try (InputStream input = classLoader.getResourceAsStream("application.properties")) {
+                if (input != null) {
+                    properties.load(input);
+                    return properties.getProperty("app." + propertyName);
+                }
+            }
         } catch (IOException e) {
-            throw new RuntimeException("Upload.getPasswordFromProperty(): Failed to load application properties", e);
+            advanceException(e);
         }
+        LOGGER.warn("Failed to load application properties or property not found: {}", propertyName);
+        return "defaultPassword";
     }
 
     /**
@@ -63,7 +73,6 @@ public abstract class Upload {
      */
     protected void extractZip(MultipartFile multipartFile, String password) {
         try {
-            //createTempDirectory();
             File tempFile = transferFile(multipartFile);
 
             // Checks if the specified file is a valid ZIP file.
@@ -71,26 +80,26 @@ public abstract class Upload {
                 if (zipFile.isEncrypted()) {
                     zipFile.setPassword(password.toCharArray());
                 }
-                zipFile.extractAll(TEMP_DIR_PATH);
+                zipFile.extractAll(UploadConstants.TEMP_DIR_PATH);
             }
         } catch (IOException e) {
-            LOGGER.error("Error extracting zip file: " + e.getMessage());
+            advanceException(e);
         }
     }
 
     /**
      * Creates the temporary directory if it doesn't exist.
-     *
-     * @throws IOException If an I/O error occurs during directory creation.
      */
-    protected void createTempDirectory() throws IOException {
-        File tempDirectory = new File(TEMP_DIR_PATH);
-        LOGGER.info(tempDirectory.getAbsolutePath());
-        registerShutdownHook(tempDirectory);
-        if (!tempDirectory.exists()) {
-            if (!tempDirectory.mkdirs()) {
-                LOGGER.error("Failed to create directory: " + TEMP_DIR_PATH);
+    protected void createTempDirectory() {
+        Path tempDirectoryPath = Paths.get(UploadConstants.TEMP_DIR_PATH);
+        LOGGER.info(tempDirectoryPath.toAbsolutePath().toString());
+        registerShutdownHook(tempDirectoryPath.toFile());
+        try {
+            if (Files.notExists(tempDirectoryPath)) {
+                Files.createDirectories(tempDirectoryPath);
             }
+        } catch (IOException e) {
+            advanceException(e);
         }
     }
 
@@ -101,30 +110,36 @@ public abstract class Upload {
      * @param file The file or directory to be deleted during shutdown.
      */
     protected void registerShutdownHook(File file) {
-        LOGGER.info("Shutdown hook: " + file);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+        LOGGER.info("Shutdown hook: {}", file);
+        Thread shutdownThread = new Thread(() -> {
             try {
                 LOGGER.info("Shutdown program, attempting to delete all temporary files.");
                 LOGGER.info("Consider the deletion successful if no errors are reported after this log message!");
                 FileUtils.deleteDirectory(file);
             } catch (IOException e) {
-                LOGGER.error("Error deleting the temporary file: " + e.getMessage());
+                LOGGER.error("Error deleting the temporary file: {}", e.getMessage());
             }
-        }));
+        });
+        shutdownThread.setName("shutdown-hook-thread"); // Set the name of the shutdown thread
+        Runtime.getRuntime().addShutdownHook(shutdownThread);
     }
-
 
     /**
      * Transfers the MultipartFile to a temporary file.
      *
      * @param multipartFile The MultipartFile to transfer.
      * @return The temporary File object representing the transferred file.
-     * @throws IOException If an I/O error occurs during the file transfer.
      */
-    protected File transferFile(MultipartFile multipartFile) throws IOException {
-        File tempFile = new File(TEMP_DIR_PATH, FILENAME);
-        multipartFile.transferTo(tempFile);
-        return tempFile;
+    protected File transferFile(MultipartFile multipartFile) {
+        File tempFile = new File(UploadConstants.TEMP_DIR_PATH + getMultiFileName());
+        try {
+            //tempFile = new File(UploadConstants.TEMP_DIR_PATH + getMultiFileName());
+            multipartFile.transferTo(tempFile);
+            return tempFile;
+        } catch (IOException e) {
+            advanceException(e);
+            return tempFile;
+        }
     }
 
     /**
@@ -135,86 +150,60 @@ public abstract class Upload {
      * to the list. If an IOException occurs during this process, an error message is logged and
      * the exception is propagated upwards.
      * </p>
-     *
-     * @return a list of UploadData objects, each representing data from a single file
-     * @throws IOException if there's an error reading the directory or any file within it
      */
-    protected List<UploadData> processFiles() throws IOException {
+    protected void processFiles() {
         uploadDataList.clear();  // Clear the list to avoid adding duplicate data
+        loadFilesToUploadDataList(Paths.get(UploadConstants.TEMP_DIR_PATH));
+    }
+
+    /**
+     * Recursively processes the files in the given path and adds the UploadData objects to the provided list.
+     *
+     * @param path The path to process.
+     */
+    protected void loadFilesToUploadDataList(Path path) {
         try {
-            processDirectory(new File(TEMP_DIR_PATH), uploadDataList);
-
+            Files.walk(path)
+                    .filter(Files::isRegularFile)
+                    .forEach(this::processFile);
         } catch (IOException e) {
-            LOGGER.error("ProcessFiles: {}",e.getMessage());
-        }
-        return uploadDataList;
-    }
-
-    /**
-     * Recursively processes the files in the given directory and adds the UploadData objects to the provided list.
-     *
-     * @param directory        The directory to process.
-     * @param uploadDataList   The list to add the UploadData objects to.
-     * @throws IOException     If an I/O error occurs.
-     */
-    protected void processDirectory(File directory, List<UploadData> uploadDataList) throws IOException {
-        File[] files = directory.listFiles();
-
-        if (files != null) {
-            for (File file : files) {
-                if (file.isFile()) {
-                    processFile(file, uploadDataList);
-                } else if (file.isDirectory()) {
-                    processDirectory(file, uploadDataList);
-                }
-            }
+            LOGGER.error(String.valueOf(path.getFileName()));
+            advanceException(e);
         }
     }
 
     /**
-     * Processes a file and creates an UploadData object for each line in the file.
-     * If the file's name matches any of the ignored names (as determined by isIgnoredFile),
-     * the method does not process the file.
+     * Processes a path and creates an UploadData object for each line in the path.
+     * If the path's name matches any of the ignored names (as determined by isIgnoredFile),
+     * the method does not process the path.
      *
-     * @param file The file to process.
-     * @param uploadDataList The list to add the UploadData objects to.
+     * @param path The path to process.
      */
-    protected void processFile(File file, List<UploadData> uploadDataList) {
-        //System.out.println(file.getAbsolutePath());
-        //String filename = file.getName();
-        //if (fileToLoad(filename)) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
+    protected void processFile(Path path) {
 
-                    //LocalDateTime localDateTime = UploadParser.findDateTimeInString(file, line);
-                        //System.out.println("Jaba Daba Doo" + localDateTime);
-                    uploadDataList.add(new UploadData(file.getName(), line, project, null));
-
-            //    }
+        try (BufferedReader reader = new BufferedReader(new FileReader(path.toFile()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                uploadDataList.add(new UploadData(path.toFile().getName(), line, project, null));
             }
         } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-            }
+            LOGGER.error(String.valueOf(path.getFileName()));
+            advanceException(e);
+        }
     }
 
     /**
-     * Checks if the given filename is one of the ignored filenames.
-     * The ignored filenames contain "VictusGraphAnalyzer.zip", "Screenshot.png",  and any filename containing "crash".
      *
-     * @param filename The filename to check.
-     * @return True if the filename is ignored, false otherwise.
+     * Helper method to advance and log an exception with the appropriate class, method, and line information.
+     * This method is used internally within the Upload class to handle exceptions and log error messages.
      */
-    private boolean fileToLoad(String filename) {
-        return     filename.contains("Shell")
-                || filename.contains("Sword")
-                || filename.contains("messages")
-                || filename.equals("HE2SOCT.log")
-                || filename.equals("Machine.xml")
-                || filename.equals("Sword.xml")
-                || filename.equals("SwordTesting.xml")
-                || filename.equals("SystemTest.xml")
-                || filename.equals("Toolbox.xml")
-                || filename.equals("WebDiag.html");
+    private void advanceException(Exception e) {
+        LOGGER.error("Exception in {}, method: {}(), line: {}",
+                getClass().getSimpleName(),
+                Thread.currentThread().getStackTrace()[1].getMethodName(),
+                Thread.currentThread().getStackTrace()[1].getLineNumber()
+        );
+        LOGGER.error("getMessage(): {}", e.getMessage());
     }
+
 }
