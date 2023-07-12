@@ -4,9 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Handles the uploading of data specific to the 'Victus' upload type.
@@ -45,7 +47,10 @@ public class UploadVictus extends Upload implements UploadProcessor {
         uploadParser.ifDateIsNullSetToUnixTime(uploadDataList);
 
         // Perform regression analysis on the data
-        uploadParser.calculateRegression(uploadParser.processUploadDataList(uploadDataList));
+        Map<LocalDateTime, Duration> dateTimeDurationMap = uploadParser.processUploadDataList(uploadDataList);
+        uploadParser.calculateRegression(dateTimeDurationMap);
+
+        CSVWriter.writeDateTimeDurationMapToCSV(dateTimeDurationMap);
 
         System.out.println(uploadParser.getSimpleRegression().getIntercept());
         System.out.println(uploadParser.getSimpleRegression().getRSquare());

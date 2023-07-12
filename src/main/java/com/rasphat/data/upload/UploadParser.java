@@ -10,7 +10,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +26,7 @@ public class UploadParser {
 
     public void extractLocalDateTimeFromUploadDateRawlineAsc(List<UploadData> uploadDataList) {
         Pattern pattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}.*?");
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneOffset.UTC);
 
         uploadDataList.stream()
                 .filter(data -> data.getFilename().contains("message"))
@@ -44,7 +43,7 @@ public class UploadParser {
 
     public void extractLocalDateTimeFromUploadDateRawlineGui(List<UploadData> uploadDataList) {
         Pattern pattern = Pattern.compile( "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}.\\d{3}.*?");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss.SSS");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss.SSS").withZone(ZoneOffset.UTC);
 
         uploadDataList.stream()
                 .filter(data -> (
@@ -64,7 +63,7 @@ public class UploadParser {
 
     public void extractLocalDateTimeFromUploadDateRawlineOct(List<UploadData> uploadDataList) {
         Pattern pattern = Pattern.compile( "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}.\\d{3}");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss.SSS");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss.SSS").withZone(ZoneOffset.UTC);
 
         uploadDataList.stream()
                 .filter(data -> (
@@ -102,20 +101,20 @@ public class UploadParser {
         Map<LocalDateTime, Duration> dateTimeDurationMap = new HashMap<>();
 
         // Filter the list for filenames containing "DMS"
-        List<UploadData> filteredList = uploadDataList.stream()
+        List<UploadData> filteredByDmsList = uploadDataList.stream()
                 .filter(uploadData -> uploadData.getFilename().contains("DMS"))
                 .collect(Collectors.toList());
 
-        for (UploadData uploadData : filteredList) {
+        for (UploadData uploadData : filteredByDmsList) {
             // Your method to extract LocalDateTime from rawLine
-            LocalDateTime fromRawLine = UploadParser.extractLocalDateTimeFromRawLine(uploadData.getRawLine());
-            LocalDateTime fromUploadData = uploadData.getLocalDateTime();
+            LocalDateTime localDateTimeAsc = UploadParser.extractLocalDateTimeFromRawLine(uploadData.getRawLine());
+            LocalDateTime LocalDateTimeGui = uploadData.getLocalDateTime();
 
             // Calculating the duration between the two dates
-            Duration duration = Duration.between(fromRawLine, fromUploadData);
+            Duration duration = Duration.between(localDateTimeAsc, LocalDateTimeGui);
 
             // Putting the LocalDateTime and Duration into the map
-            dateTimeDurationMap.put(fromUploadData, duration);
+            dateTimeDurationMap.put(LocalDateTimeGui, duration);
         }
         return dateTimeDurationMap;
     }
@@ -148,8 +147,8 @@ public class UploadParser {
     static LocalDateTime extractLocalDateTimeFromRawLine(String rawLine) {
 
         // Define pattern and formatter
-        Pattern PATTERN = Pattern.compile("\\d{1,2}\\/\\d{1,2}\\/\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\s[AP]M");
-        DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy h:mm:ss a");
+        Pattern PATTERN = Pattern.compile("\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\s[AP]M");
+        DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy h:mm:ss a").withZone(ZoneOffset.UTC);
 
         if (rawLine != null) {
             // Find the date time substring using the pattern
