@@ -87,6 +87,7 @@ public class UploadParser {
         });
     }
 
+
     /**
      * Processes a list of UploadData objects, extracts "DMS" filenames, calculates the duration between
      * the rawLine LocalDateTime and the UploadData LocalDateTime, and stores the result in a map.
@@ -96,6 +97,63 @@ public class UploadParser {
      *         duration between it and another LocalDateTime extracted from the same UploadData object.
      */
     public Map<LocalDateTime, Duration> processUploadDataList(List<UploadData> uploadDataList) {
+        // Map to hold LocalDateTime as key and Duration as value
+        Map<LocalDateTime, Duration> dateTimeDurationMap = new HashMap<>();
+
+        // Filter the list for filenames containing "DMS"
+        List<UploadData> filteredByDmsList = uploadDataList.stream()
+                .filter(uploadData -> uploadData.getFilename().contains("DMS"))
+                .collect(Collectors.toList());
+
+        for (UploadData uploadData : filteredByDmsList) {
+            // Your method to extract LocalDateTime from rawLine
+            LocalDateTime localDateTimeAsc = UploadParser.extractLocalDateTimeFromRawLine(uploadData.getRawLine());
+            LocalDateTime localDateTimeGui = uploadData.getLocalDateTime();
+
+            // Calculating the duration between the two dates
+            Duration duration = Duration.between(localDateTimeAsc, localDateTimeGui);
+
+            // Putting the LocalDateTime and Duration into the map
+            dateTimeDurationMap.put(localDateTimeGui, duration);
+        }
+
+        // Calculate RMSE
+        double rmse = calculateRMSE(dateTimeDurationMap);
+
+        // Output RMSE
+        System.out.println("RMSE: " + rmse);
+
+        return dateTimeDurationMap;
+    }
+
+    /**
+     * Calculates the root mean square error (RMSE) of the durations in the provided map.
+     *
+     * @param dateTimeDurationMap The map with LocalDateTime keys and Duration values.
+     * @return The RMSE of the durations in the map.
+     */
+    private double calculateRMSE(Map<LocalDateTime, Duration> dateTimeDurationMap) {
+        double sumOfSquaredErrors = dateTimeDurationMap.values().stream()
+                .mapToDouble(duration -> Math.pow(duration.getSeconds(), 2))
+                .sum();
+
+        double meanSquaredError = sumOfSquaredErrors / dateTimeDurationMap.size();
+        double rmse = Math.sqrt(meanSquaredError);
+
+        return rmse;
+    }
+
+
+
+    /**
+     * Processes a list of UploadData objects, extracts "DMS" filenames, calculates the duration between
+     * the rawLine LocalDateTime and the UploadData LocalDateTime, and stores the result in a map.
+     *
+     * @param uploadDataList The list of UploadData objects to process.
+     * @return A map with LocalDateTime keys and Duration values. Each entry represents a LocalDateTime and the
+     *         duration between it and another LocalDateTime extracted from the same UploadData object.
+     */
+    public Map<LocalDateTime, Duration> processUploadDataList1(List<UploadData> uploadDataList) {
 
         // Map to hold LocalDateTime as key and Duration as value
         Map<LocalDateTime, Duration> dateTimeDurationMap = new HashMap<>();
@@ -168,14 +226,47 @@ public class UploadParser {
      * @param dateTime The original LocalDateTime to correct.
      * @return A new LocalDateTime, corrected by the predicted offset.
      */
+
+    private boolean debugMode = true;
+
     public LocalDateTime correctDateTime(LocalDateTime dateTime) {
+        if (debugMode) {
+            System.out.println("Duration start: " + dateTime);
+        }
+
         // Convert the original LocalDateTime to epoch milliseconds
         long originalMilliseconds = dateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+
+        if (debugMode) {
+            Duration meanDuration = Duration.ofMillis(originalMilliseconds);
+            System.out.println("Mean (Duration): " + meanDuration);
+        }
 
         // Predict the offset in milliseconds using SimpleRegression
         long offsetMilliseconds = (long) simpleRegression.predict(originalMilliseconds);
 
+        if (debugMode) {
+            Duration meanDuration = Duration.ofMillis(offsetMilliseconds);
+            System.out.println("Mean (Duration): " + meanDuration);
+        }
+
+        debugMode=false;
         // Correct the original LocalDateTime by the predicted offset and return
         return dateTime.plus(Duration.ofMillis(offsetMilliseconds));
+    }
+
+    public Duration predictOffset(LocalDateTime dateTime) {
+        long originalMilliseconds = dateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+        long offsetMilliseconds = (long) simpleRegression.predict(originalMilliseconds);
+        return Duration.ofMillis(offsetMilliseconds);
+    }
+
+    public LocalDateTime correctDateTimeWithPrediction(LocalDateTime dateTime) {
+        Duration offset = predictOffset(dateTime);
+        return dateTime.plus(offset);
+    }
+
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
     }
 }

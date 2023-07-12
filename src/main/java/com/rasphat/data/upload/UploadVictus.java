@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import static com.rasphat.data.upload.DurationStatistics.calculateDurationStatistics;
+
 /**
  * Handles the uploading of data specific to the 'Victus' upload type.
  * Extends the abstract class 'Upload' and implements the 'UploadProcessor' interface.
@@ -49,6 +51,8 @@ public class UploadVictus extends Upload implements UploadProcessor {
         // Perform regression analysis on the data
         Map<LocalDateTime, Duration> dateTimeDurationMap = uploadParser.processUploadDataList(uploadDataList);
         uploadParser.calculateRegression(dateTimeDurationMap);
+        //uploadParser.correctDateTimeWithPrediction(dateTimeDurationMap);
+        calculateDurationStatistics(dateTimeDurationMap);
 
         CSVWriter.writeDateTimeDurationMapToCSV(dateTimeDurationMap);
 
