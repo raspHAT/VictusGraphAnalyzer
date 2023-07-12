@@ -20,22 +20,20 @@ import java.util.Properties;
 public abstract class Upload {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Upload.class);
-
-    private static String project = "TO_BE_SET";
-    private static String multiFileName = project + "_GraphAnalyzer.zip";
-
     protected static final List<UploadData> uploadDataList = new ArrayList<>();
+    private String project = "TO_BE_SET";
+    private String multiFileName = project + "_GraphAnalyzer.zip";
 
-    protected static void setProject(String project) {
-        Upload.project = project;
+    public void setProject(String project) {
+        this.project = project;
         multiFileName = project + "_GraphAnalyzer.zip";
     }
 
-    protected static String getProject() {
+    protected String getProject() {
         return project;
     }
 
-    protected static String getMultiFileName() {
+    protected String getMultiFileName() {
         return multiFileName;
     }
 
@@ -197,7 +195,7 @@ public abstract class Upload {
      * Helper method to advance and log an exception with the appropriate class, method, and line information.
      * This method is used internally within the Upload class to handle exceptions and log error messages.
      */
-    private void advanceException(Exception e) {
+    protected void advanceException(Exception e) {
         LOGGER.error("Exception in {}, method: {}(), line: {}",
                 getClass().getSimpleName(),
                 Thread.currentThread().getStackTrace()[1].getMethodName(),

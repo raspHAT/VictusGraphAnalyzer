@@ -48,7 +48,7 @@ public class MainController extends Upload implements ErrorController {
         }
 
         try {
-            Upload.setProject(project);
+            setProject(project);
             UploadFactory uploadFactory= new UploadFactory();
             UploadProcessor uploadProcessor = uploadFactory.getUploadProcessor(project);
             uploadProcessor.processUploadData(file);

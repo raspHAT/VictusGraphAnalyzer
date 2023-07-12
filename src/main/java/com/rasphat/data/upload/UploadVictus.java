@@ -1,18 +1,12 @@
 package com.rasphat.data.upload;
 
-import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Handles the uploading of data specific to the 'Victus' upload type.
@@ -44,74 +38,30 @@ public class UploadVictus extends Upload implements UploadProcessor {
         // Process extracted files and store in uploadDataList
         processFiles();
 
+        UploadParser uploadParser = new UploadParser();
+        uploadParser.extractLocalDateTimeFromUploadDateRawlineAsc(uploadDataList);
+        uploadParser.extractLocalDateTimeFromUploadDateRawlineGui(uploadDataList);
+        uploadParser.extractLocalDateTimeFromUploadDateRawlineOct(uploadDataList);
+        uploadParser.ifDateIsNullSetToUnixTime(uploadDataList);
 
-        UploadParser.filterAndExtractDateTimeAsc(uploadDataList);
-        UploadParser.filterAndExtractDateTimeGui(uploadDataList);
-        UploadParser.filterAndExtractDateTimeOct(uploadDataList);
-        UploadParser.filterAndExtractDateTime(uploadDataList);
+        // Perform regression analysis on the data
+        uploadParser.calculateRegression(uploadParser.processUploadDataList(uploadDataList));
+
+        System.out.println(uploadParser.getSimpleRegression().getIntercept());
+        System.out.println(uploadParser.getSimpleRegression().getRSquare());
+
+        uploadDataList.stream()
+                .filter(data -> data.getFilename().contains("message"))
+                .forEach(data -> {
+                    LocalDateTime originalDateTime = data.getLocalDateTime();
+                    LocalDateTime correctedDateTime = uploadParser.correctDateTime(originalDateTime);
+                    data.setLocalDateTime(correctedDateTime);
+                });
+
+
 
         // Sort the data by datetime
         uploadDataList.sort(Comparator.comparing(UploadData::getLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
-
-        // Perform regression analysis on the data
-        calculateRegression(processUploadDataList(uploadDataList));
-
-
-    }
-
-    /**
-     * Processes a list of UploadData objects, extracts "DMS" filenames, calculates the duration between
-     * the rawLine LocalDateTime and the UploadData LocalDateTime, and stores the result in a map.
-     *
-     * @param uploadDataList The list of UploadData objects to process.
-     * @return A map with LocalDateTime keys and Duration values. Each entry represents a LocalDateTime and the
-     *         duration between it and another LocalDateTime extracted from the same UploadData object.
-     */
-    public static Map<LocalDateTime, Duration> processUploadDataList(List<UploadData> uploadDataList) {
-        // Filter the list for filenames containing "DMS"
-        List<UploadData> filteredList = uploadDataList.stream()
-                .filter(uploadData -> uploadData.getFilename().contains("DMS"))
-                .collect(Collectors.toList());
-
-        // Map to hold LocalDateTime as key and Duration as value
-        Map<LocalDateTime, Duration> dateTimeDurationMap = new HashMap<>();
-
-        for (UploadData uploadData : filteredList) {
-            // Your method to extract LocalDateTime from rawLine
-            LocalDateTime fromRawLine = UploadParser.extractLocalDateTimeFromRawLine(uploadData.getRawLine());
-            LocalDateTime fromUploadData = uploadData.getLocalDateTime();
-
-            // Calculating the duration between the two dates
-            Duration duration = Duration.between(fromRawLine, fromUploadData);
-
-            // Putting the LocalDateTime and Duration into the map
-            dateTimeDurationMap.put(fromUploadData, duration);
-        }
-
-        return dateTimeDurationMap;
-    }
-
-    /**
-     * Performs simple linear regression on a provided map that has LocalDateTime as keys and Duration as values.
-     *
-     * @param timestampsDurationsMap The map with LocalDateTime keys and Duration values.
-     *                               Each entry represents a timestamp and the duration associated with it.
-     * @throws IllegalArgumentException If the input map is null or empty.
-     */
-    protected void calculateRegression(Map<LocalDateTime, Duration> timestampsDurationsMap) {
-        // Check if map is null or empty
-        if (timestampsDurationsMap == null || timestampsDurationsMap.isEmpty()) {
-            throw new IllegalArgumentException("Invalid input map");
-        }
-
-        SimpleRegression regression = new SimpleRegression();
-
-        for (Map.Entry<LocalDateTime, Duration> entry : timestampsDurationsMap.entrySet()) {
-            double timestampAsEpochSecond = entry.getKey().toEpochSecond(ZoneOffset.UTC);
-            double durationAsSeconds = entry.getValue().getSeconds();
-
-            regression.addData(timestampAsEpochSecond, durationAsSeconds);
-        }
     }
 
     /**
@@ -124,6 +74,7 @@ public class UploadVictus extends Upload implements UploadProcessor {
     private boolean fileToLoad(String filename) {
         return filename.contains("Shell")
                 || filename.contains("Sword")
+                || filename.contains("ToolBox")
                 || filename.contains("messages")
                 || filename.equals("HE2SOCT.log")
                 || filename.equals("Machine.xml")
@@ -133,4 +84,5 @@ public class UploadVictus extends Upload implements UploadProcessor {
                 || filename.equals("Toolbox.xml")
                 || filename.equals("WebDiag.html");
     }
+
 }
