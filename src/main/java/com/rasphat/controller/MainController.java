@@ -1,5 +1,6 @@
 package com.rasphat.controller;
 
+import com.rasphat.data.portfolio.PortfolioVictus;
 import com.rasphat.data.upload.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +71,14 @@ public class MainController extends Upload implements ErrorController {
         }
     }
 
+    @GetMapping("/portfolio")
+    public String portfolio() {
+        PortfolioVictus portfolioVictus = new PortfolioVictus();
+        portfolioVictus.creteGuidMap();
+        return "portfolio.html";
+    }
+
+
     /**
      * Serves the success.html page.
      * @return a string representing the path to success.html.
@@ -93,7 +102,7 @@ public class MainController extends Upload implements ErrorController {
      */
     public void writeToFile() {
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(UploadConstants.COMBINED_LOGS_TEMP_FOLDER.toPath()))) {
-            uploadDataList.stream()
+            getUploadDataList().stream()
                     .map(UploadData::toString)
                     .forEach(writer::println);
         } catch (IOException e) {

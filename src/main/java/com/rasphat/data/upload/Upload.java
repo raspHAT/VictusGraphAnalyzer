@@ -20,7 +20,7 @@ import java.util.Properties;
 public abstract class Upload {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Upload.class);
-    protected static final List<UploadData> uploadDataList = new ArrayList<>();
+    private static final List<UploadData> uploadDataList = new ArrayList<>();
     private String project = "TO_BE_SET";
     private String multiFileName = project + "_GraphAnalyzer.zip";
 
@@ -35,6 +35,10 @@ public abstract class Upload {
 
     protected String getMultiFileName() {
         return multiFileName;
+    }
+
+    public static List<UploadData> getUploadDataList() {
+        return uploadDataList;
     }
 
     /**

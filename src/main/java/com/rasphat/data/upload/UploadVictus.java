@@ -41,17 +41,17 @@ public class UploadVictus extends Upload implements UploadProcessor {
 
         // parse LocalDateTime from rawlines due to logfile type
         UploadVictusParser uploadVictusParser = new UploadVictusParser();
-        uploadVictusParser.ascTimeFromRawline(uploadDataList);
-        uploadVictusParser.guiTimeFromRawline(uploadDataList);
-        uploadVictusParser.octTimeFromRawline(uploadDataList);
-        uploadVictusParser.nullTimeFromRawline(uploadDataList);
+        uploadVictusParser.ascTimeFromRawline(getUploadDataList());
+        uploadVictusParser.guiTimeFromRawline(getUploadDataList());
+        uploadVictusParser.octTimeFromRawline(getUploadDataList());
+        uploadVictusParser.nullTimeFromRawline(getUploadDataList());
 
         // Perform regression analysis on the data
-        Map<LocalDateTime, Duration> dateTimeDurationMap = uploadVictusParser.processUploadDataList(uploadDataList);
+        Map<LocalDateTime, Duration> dateTimeDurationMap = uploadVictusParser.processUploadDataList(getUploadDataList());
         uploadVictusParser.populateTimeDurationMap(dateTimeDurationMap);
 
         // Correct the LocalDateTime for specific filenames using regression analysis
-        uploadDataList.stream()
+        getUploadDataList().stream()
                 .filter(data -> data.getFilename().contains("message"))
                 .forEach(data -> {
                     LocalDateTime originalDateTime = data.getLocalDateTime();
@@ -60,6 +60,6 @@ public class UploadVictus extends Upload implements UploadProcessor {
                 });
 
         // Sort the data by datetime
-        uploadDataList.sort(Comparator.comparing(UploadData::getLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
+        getUploadDataList().sort(Comparator.comparing(UploadData::getLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
     }
 }
