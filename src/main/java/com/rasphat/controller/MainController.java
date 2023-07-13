@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -74,7 +75,7 @@ public class MainController extends Upload implements ErrorController {
     @GetMapping("/portfolio")
     public String portfolio() {
         PortfolioVictus portfolioVictus = new PortfolioVictus();
-        portfolioVictus.creteGuidMap();
+        portfolioVictus.createGuidMap();
         return "portfolio.html";
     }
 
@@ -101,7 +102,7 @@ public class MainController extends Upload implements ErrorController {
      * Helper method to write data to a specific file.
      */
     public void writeToFile() {
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(UploadConstants.COMBINED_LOGS_TEMP_FOLDER.toPath()))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(new File(UploadConstants.TEMP_DIR_COMBINED_LOGS).toPath()))) {
             getUploadDataList().stream()
                     .map(UploadData::toString)
                     .forEach(writer::println);

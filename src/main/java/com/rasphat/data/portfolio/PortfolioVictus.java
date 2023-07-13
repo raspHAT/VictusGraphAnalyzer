@@ -13,7 +13,7 @@ public class PortfolioVictus {
 
     private final Map<String, UploadData> guidMap = guidExtractor.getGuidMap();
 
-    public void creteGuidMap() {
+    public void createGuidMap() {
         guidExtractor.processUploadDataList(Upload.getUploadDataList());
 
         // Print the map

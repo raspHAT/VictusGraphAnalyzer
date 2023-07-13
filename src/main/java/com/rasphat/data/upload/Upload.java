@@ -6,13 +6,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
+
 
 /**
  * Abstract class for uploading and processing files.
@@ -21,24 +27,26 @@ public abstract class Upload {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Upload.class);
     private static final List<UploadData> uploadDataList = new ArrayList<>();
-    private String project = "TO_BE_SET";
-    private String multiFileName = project + "_GraphAnalyzer.zip";
-
-    public void setProject(String project) {
-        this.project = project;
-        multiFileName = project + "_GraphAnalyzer.zip";
+    public static List<UploadData> getUploadDataList() {
+        return uploadDataList;
     }
 
-    protected String getProject() {
+    private String project = "TO_BE_SET";
+    private String multiFileName;
+
+    public String getProject() {
         return project;
     }
 
-    protected String getMultiFileName() {
-        return multiFileName;
+    public void setProject(String project) {
+        synchronized (this) {
+            this.project = project;
+            multiFileName = project + "_GraphAnalyzer.zip";
+        }
     }
 
-    public static List<UploadData> getUploadDataList() {
-        return uploadDataList;
+    public String getMultiFileName() {
+        return multiFileName;
     }
 
     /**
@@ -67,29 +75,6 @@ public abstract class Upload {
     }
 
     /**
-     * Extracts the contents of a ZIP file from the given MultipartFile to a temporary directory.
-     * Deletes the temporary directory if it already exists.
-     *
-     * @param multipartFile The MultipartFile containing the ZIP file.
-     * @param password      The password for the ZIP file (if encrypted).
-     */
-    protected void extractZip(MultipartFile multipartFile, String password) {
-        try {
-            File tempFile = transferFile(multipartFile);
-
-            // Checks if the specified file is a valid ZIP file.
-            try (ZipFile zipFile = new ZipFile(tempFile)) {
-                if (zipFile.isEncrypted()) {
-                    zipFile.setPassword(password.toCharArray());
-                }
-                zipFile.extractAll(UploadConstants.TEMP_DIR_PATH);
-            }
-        } catch (IOException e) {
-            advanceException(e);
-        }
-    }
-
-    /**
      * Creates the temporary directory if it doesn't exist.
      */
     protected void createTempDirectory() {
@@ -99,6 +84,7 @@ public abstract class Upload {
         try {
             if (Files.notExists(tempDirectoryPath)) {
                 Files.createDirectories(tempDirectoryPath);
+                Files.createDirectories(Paths.get(UploadConstants.TEMP_DIR_PATH_EXTRACTED_DATA));
             }
         } catch (IOException e) {
             advanceException(e);
@@ -124,6 +110,29 @@ public abstract class Upload {
         });
         shutdownThread.setName("shutdown-hook-thread"); // Set the name of the shutdown thread
         Runtime.getRuntime().addShutdownHook(shutdownThread);
+    }
+
+    /**
+     * Extracts the contents of a ZIP file from the given MultipartFile to a temporary directory.
+     * Deletes the temporary directory if it already exists.
+     *
+     * @param multipartFile The MultipartFile containing the ZIP file.
+     * @param password      The password for the ZIP file (if encrypted).
+     */
+    protected void extractZip(MultipartFile multipartFile, String password) {
+        try {
+            File tempFile = transferFile(multipartFile);
+
+            // Checks if the specified file is a valid ZIP file.
+            try (ZipFile zipFile = new ZipFile(tempFile)) {
+                if (zipFile.isEncrypted()) {
+                    zipFile.setPassword(password.toCharArray());
+                }
+                zipFile.extractAll(UploadConstants.TEMP_DIR_PATH_EXTRACTED_DATA);
+            }
+        } catch (IOException e) {
+            advanceException(e);
+        }
     }
 
     /**
@@ -155,7 +164,7 @@ public abstract class Upload {
      */
     protected void processFiles() {
         uploadDataList.clear();  // Clear the list to avoid adding duplicate data
-        loadFilesToUploadDataList(Paths.get(UploadConstants.TEMP_DIR_PATH));
+        loadFilesToUploadDataList(Paths.get(UploadConstants.TEMP_DIR_PATH_EXTRACTED_DATA));
     }
 
     /**
@@ -164,8 +173,8 @@ public abstract class Upload {
      * @param path The path to process.
      */
     protected void loadFilesToUploadDataList(Path path) {
-        try {
-            Files.walk(path)
+        try (Stream<Path> pathStream = Files.walk(path)) {
+            pathStream
                     .filter(Files::isRegularFile)
                     .forEach(this::processFile);
         } catch (IOException e) {

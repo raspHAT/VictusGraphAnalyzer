@@ -10,10 +10,10 @@ import java.util.regex.Pattern;
 
 public class GuidExtractor {
 
-    private Map<String, UploadData> guidMap;
+    private final Map<String, UploadData> guidMap = new HashMap<>();
 
-    protected GuidExtractor() {
-        guidMap = new HashMap<>();
+    public Map<String, UploadData> getGuidMap() {
+        return guidMap;
     }
 
     public void processUploadDataList(List<UploadData> uploadDataList) {
@@ -32,9 +32,5 @@ public class GuidExtractor {
             return matcher.group();
         }
         return null;
-    }
-
-    public Map<String, UploadData> getGuidMap() {
-        return guidMap;
     }
 }

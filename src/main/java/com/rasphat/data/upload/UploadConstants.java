@@ -13,6 +13,11 @@ public class UploadConstants {
     public static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir") + "GRAPH_ANALYZER" + File.separator;
 
     /**
+     * The temporary directory path for storing uploaded files.
+     */
+    public static final String TEMP_DIR_PATH_EXTRACTED_DATA = System.getProperty("java.io.tmpdir") + "GRAPH_ANALYZER" + File.separator + "EXTRACTED_DATA" + File.separator;
+
+    /**
      * The filename for combined logs.
      */
     public static final String COMBINED_LOGS = "COMBINED_LOGS.txt";
@@ -20,6 +25,6 @@ public class UploadConstants {
     /**
      * The temporary folder for combined logs.
      */
-    public static final File COMBINED_LOGS_TEMP_FOLDER = new File(TEMP_DIR_PATH + COMBINED_LOGS);
+    public static final String TEMP_DIR_COMBINED_LOGS = TEMP_DIR_PATH + COMBINED_LOGS;
 
 }
