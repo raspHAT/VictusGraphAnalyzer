@@ -77,7 +77,7 @@ public class MainController extends Upload implements ErrorController {
     public String portfolio() {
         LOGGER.info("Start portfolio function!");
         PortfolioVictus portfolioVictus = new PortfolioVictus();
-        portfolioVictus.createGuidMap();
+        portfolioVictus.createPortfolioVictus();
         return "portfolio.html";
     }
 
