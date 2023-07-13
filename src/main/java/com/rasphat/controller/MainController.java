@@ -94,7 +94,7 @@ public class MainController extends Upload implements ErrorController {
     public void writeToFile() {
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(UploadConstants.COMBINED_LOGS_TEMP_FOLDER.toPath()))) {
             uploadDataList.stream()
-                    .map(UploadData::stringToSaveInFile)
+                    .map(UploadData::toString)
                     .forEach(writer::println);
         } catch (IOException e) {
             LOGGER.error("Error writing to file: ", e);

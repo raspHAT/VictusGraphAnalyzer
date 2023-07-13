@@ -7,10 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
-
-import static com.rasphat.data.upload.DurationStatistics.calculateDurationStatistics;
 
 /**
  * Handles the uploading of data specific to the 'Victus' upload type.
@@ -21,7 +18,6 @@ public class UploadVictus extends Upload implements UploadProcessor {
     private static final String NAME_OF_PROPERTY = UploadType.VICTUS.name();
     private static final Logger LOGGER = LoggerFactory.getLogger(UploadVictus.class);
 
-
     /**
      * Processes the upload data specific to the 'Victus' upload type.
      *
@@ -31,67 +27,39 @@ public class UploadVictus extends Upload implements UploadProcessor {
     public void processUploadData(MultipartFile multipartFile) {
         LOGGER.info("Processing upload data from: {}", getClass());
 
-        // Extracts zip file content using the provided property password
+        // Get password from application.properties file
         String password = getPasswordFromProperty(NAME_OF_PROPERTY);
 
         // Create the temp folder with a shutdown hook
         createTempDirectory();
 
+        // Extracts zip file content using the provided property password
         extractZip(multipartFile, password);
 
         // Process extracted files and store in uploadDataList
         processFiles();
 
-        UploadParser uploadParser = new UploadParser();
-        uploadParser.extractLocalDateTimeFromUploadDateRawlineAsc(uploadDataList);
-        uploadParser.extractLocalDateTimeFromUploadDateRawlineGui(uploadDataList);
-        uploadParser.extractLocalDateTimeFromUploadDateRawlineOct(uploadDataList);
-        uploadParser.ifDateIsNullSetToUnixTime(uploadDataList);
+        // parse LocalDateTime from rawlines due to logfile type
+        UploadVictusParser uploadVictusParser = new UploadVictusParser();
+        uploadVictusParser.ascTimeFromRawline(uploadDataList);
+        uploadVictusParser.guiTimeFromRawline(uploadDataList);
+        uploadVictusParser.octTimeFromRawline(uploadDataList);
+        uploadVictusParser.nullTimeFromRawline(uploadDataList);
 
         // Perform regression analysis on the data
-        Map<LocalDateTime, Duration> dateTimeDurationMap = uploadParser.processUploadDataList(uploadDataList);
-        uploadParser.calculateRegression(dateTimeDurationMap);
-        //uploadParser.correctDateTimeWithPrediction(dateTimeDurationMap);
-        calculateDurationStatistics(dateTimeDurationMap);
+        Map<LocalDateTime, Duration> dateTimeDurationMap = uploadVictusParser.processUploadDataList(uploadDataList);
+        uploadVictusParser.populateTimeDurationMap(dateTimeDurationMap);
 
-        CSVWriter.writeDateTimeDurationMapToCSV(dateTimeDurationMap);
-
-        System.out.println(uploadParser.getSimpleRegression().getIntercept());
-        System.out.println(uploadParser.getSimpleRegression().getRSquare());
-
+        // Correct the LocalDateTime for specific filenames using regression analysis
         uploadDataList.stream()
                 .filter(data -> data.getFilename().contains("message"))
                 .forEach(data -> {
                     LocalDateTime originalDateTime = data.getLocalDateTime();
-                    LocalDateTime correctedDateTime = uploadParser.correctDateTime(originalDateTime);
+                    LocalDateTime correctedDateTime = uploadVictusParser.correctDateTime(originalDateTime);
                     data.setLocalDateTime(correctedDateTime);
                 });
-
-
 
         // Sort the data by datetime
         uploadDataList.sort(Comparator.comparing(UploadData::getLocalDateTime, Comparator.nullsLast(Comparator.naturalOrder())));
     }
-
-    /**
-     * Checks if the given filename is one of the ignored filenames.
-     * The ignored filenames contain "VictusGraphAnalyzer.zip", "Screenshot.png", and any filename containing "crash".
-     *
-     * @param filename The filename to check.
-     * @return True if the filename is ignored, false otherwise.
-     */
-    private boolean fileToLoad(String filename) {
-        return filename.contains("Shell")
-                || filename.contains("Sword")
-                || filename.contains("ToolBox")
-                || filename.contains("messages")
-                || filename.equals("HE2SOCT.log")
-                || filename.equals("Machine.xml")
-                || filename.equals("Sword.xml")
-                || filename.equals("SwordTesting.xml")
-                || filename.equals("SystemTest.xml")
-                || filename.equals("Toolbox.xml")
-                || filename.equals("WebDiag.html");
-    }
-
 }

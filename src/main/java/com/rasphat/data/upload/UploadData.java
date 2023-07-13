@@ -73,26 +73,12 @@ public class UploadData {
     }
 
     /**
-     * Returns a string representation of the upload data.
-     *
-     * @return A string representing the upload data.
-     */
-    @Override
-    public String toString() {
-        return "UploadData{" +
-                "filename='" + filename + '\'' +
-                ", rawLine='" + rawLine + '\'' +
-                ", device='" + project + '\'' +
-                ", localDateTime=" + localDateTime +
-                '}';
-    }
-
-    /**
      * Returns a formatted string representation of the upload data to be saved in a file.
      *
      * @return A formatted string representing the upload data.
      */
-    public String stringToSaveInFile() {
+    @Override
+    public String toString() {
         String formattedDateTime;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
         if (localDateTime != null) {
