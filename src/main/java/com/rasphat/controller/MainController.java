@@ -9,12 +9,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 
 /**
  * MainController class handles the file uploading process and delegates the data processing to UploadProcessor.
@@ -99,6 +106,28 @@ public class MainController extends Upload implements ErrorController {
     public String error() {
         return "error.html";
     }
+
+    @GetMapping("/chart-data")
+    @ResponseBody
+    public Map<String, Object> getChartData() {
+        Map<String, Object> chartData = new HashMap<>();
+        List<Map<String, Object>> dataPoints = new ArrayList<>();
+
+        for (Map.Entry<LocalDateTime, Duration> entry : UploadVictus.getDateTimeDurationMap().entrySet()) {
+            Map<String, Object> dataPoint = new HashMap<>();
+            dataPoint.put("date", entry.getKey().toString());
+            dataPoint.put("duration", entry.getValue().toMillis());
+            dataPoints.add(dataPoint);
+        }
+
+        chartData.put("data", dataPoints);
+
+        return chartData;
+    }
+
+
+
+
 
     /**
      * Helper method to write data to a specific file.

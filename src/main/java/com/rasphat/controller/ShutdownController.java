@@ -20,6 +20,7 @@ public class ShutdownController {
 
     @GetMapping("/shutdown")
     public int shutdown() {
+
         return SpringApplication.exit(context, () -> 0);
     }
 }

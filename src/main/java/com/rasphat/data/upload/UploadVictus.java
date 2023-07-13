@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -17,6 +18,11 @@ public class UploadVictus extends Upload implements UploadProcessor {
 
     private static final String NAME_OF_PROPERTY = UploadType.VICTUS.name();
     private static final Logger LOGGER = LoggerFactory.getLogger(UploadVictus.class);
+    private static final Map<LocalDateTime, Duration> dateTimeDurationMap = new HashMap<>();
+
+    public static Map<LocalDateTime, Duration> getDateTimeDurationMap() {
+        return dateTimeDurationMap;
+    }
 
     /**
      * Processes the upload data specific to the 'Victus' upload type.
@@ -47,7 +53,7 @@ public class UploadVictus extends Upload implements UploadProcessor {
         uploadVictusParser.nullTimeFromRawline(getUploadDataList());
 
         // Perform regression analysis on the data
-        Map<LocalDateTime, Duration> dateTimeDurationMap = uploadVictusParser.processUploadDataList(getUploadDataList());
+        uploadVictusParser.processUploadDataList(getUploadDataList());
         uploadVictusParser.populateTimeDurationMap(dateTimeDurationMap);
 
         // Correct the LocalDateTime for specific filenames using regression analysis

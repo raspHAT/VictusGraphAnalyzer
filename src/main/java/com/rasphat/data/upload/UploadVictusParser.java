@@ -122,8 +122,8 @@ public class UploadVictusParser {
      * @return A map with LocalDateTime keys and Duration values. Each entry represents a LocalDateTime and the
      * duration between it and another LocalDateTime extracted from the same UploadData object.
      */
-    public Map<LocalDateTime, Duration> processUploadDataList(List<UploadData> uploadDataList) {
-        Map<LocalDateTime, Duration> dateTimeDurationMap = new HashMap<>();
+    public void processUploadDataList(List<UploadData> uploadDataList) {
+        //Map<LocalDateTime, Duration> dateTimeDurationMap = new HashMap<>();
 
         List<UploadData> filteredByDmsList = uploadDataList.stream()
                 .filter(uploadData -> uploadData.getFilename().contains("DMS"))
@@ -134,9 +134,9 @@ public class UploadVictusParser {
             LocalDateTime localDateTimeGui = uploadData.getLocalDateTime();
 
             Duration duration = Duration.between(localDateTimeAsc, localDateTimeGui);
-            dateTimeDurationMap.put(localDateTimeGui, duration);
+            UploadVictus.getDateTimeDurationMap().put(localDateTimeGui, duration);
         }
-        return dateTimeDurationMap;
+        //return UploadVictus.getDateTimeDurationMap();
     }
 
     /**

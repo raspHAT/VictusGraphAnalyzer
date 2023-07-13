@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, height=500">
+
+<head>
+    <title>AmCharts Example</title>
+
+    <!-- Styles -->
+    <style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    </style>
+    <!-- Resources -->
+    <script src="/webjars/amcharts/5.1.4/index.js"></script>
+    <script src="/webjars/amcharts/5.1.4/xy.js"></script>
+    <script src="/webjars/amcharts/5.1.4/themes/Animated.js"></script>
+
+</head>
+<body>
+<!-- Chart container -->
+<div id="chartdiv"></div>
+
+<!-- Chart code -->
+<script>
+console.log("Hello, World!!!");
+document.addEventListener('DOMContentLoaded', function() {
+console.log("Hello, World!");
+am5.ready(function() {
+    // Create root element
+    var root = am5.Root.new("chartdiv");
+
+    // Set themes
+    root.setThemes([am5.themes.Animated.new(root)]);
+
+    // Create chart
+    var chart = root.container.children.push(am5.xy.XYChart.new(root, {
+        panX: true,
+        panY: true,
+        wheelX: "panX",
+        wheelY: "zoomX",
+        pinchZoomX: true
+    }));
+
+    // Create axes
+    var xAxis = chart.xAxes.push(am5.xy.DateAxis.new(root, {
+        maxDeviation: 0.2,
+        baseInterval: {
+            timeUnit: "day",
+            count: 1
+        }
+    }));
+
+    var yAxis = chart.yAxes.push(am5.xy.ValueAxis.new(root));
+
+    // Add series
+    var series = chart.series.push(am5.xy.LineSeries.new(root, {
+        xAxis: xAxis,
+        yAxis: yAxis,
+        valueXField: "date",
+        valueYField: "duration"
+    }));
+
+    // Fetch chart data
+    fetch('/chart-data')
+        .then(response => response.json())
+        .then(data => {
+        // Convert map to array of objects
+
+        const dataArray = Object.entries(data).map(([date, duration]) => ({ date, duration }));
+        console.log(data); // Output the received data to the console
+            // Set data
+            series.data.setAll(data.data);
+        });
+
+    // Make stuff animate on load
+    chart.appear(1000, 100);
+});
+}
+</script>
+</body>
+</html>
