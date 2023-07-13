@@ -59,7 +59,7 @@ public class MainController extends Upload implements ErrorController {
 
             LOGGER.info("Upload successfully!");
 
-            System.out.println("Hier ist meine Upload Funktion!");
+
             return "redirect:/success";
 
         } catch (Exception e) {
@@ -75,12 +75,11 @@ public class MainController extends Upload implements ErrorController {
 
     @GetMapping("/portfolio")
     public String portfolio() {
-        LOGGER.info("Start der Portfolio Funktion!");
+        LOGGER.info("Start portfolio function!");
         PortfolioVictus portfolioVictus = new PortfolioVictus();
         portfolioVictus.createGuidMap();
         return "portfolio.html";
     }
-
 
     /**
      * Serves the success.html page.
