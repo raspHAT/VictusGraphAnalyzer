@@ -42,8 +42,9 @@ public class MainController extends Upload implements ErrorController {
      * @return a string representing the path to the next page, depending on whether the upload was successful or not.
      */
     @PostMapping("/upload")
-    public String upload(@RequestParam("project") String project,
-                         @RequestParam("file") MultipartFile file) {
+    public String upload(
+            @RequestParam("project") String project,
+            @RequestParam("file") MultipartFile file) {
 
         if (file == null || file.isEmpty() || project == null || project.isEmpty()) {
             return "redirect:/error";
