@@ -1,86 +1,50 @@
-<!DOCTYPE html>
-<html>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, height=500">
-
+<!DOCTYPE html >
+<html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=500">
+    <meta charset="utf-8">
     <title>AmCharts Example</title>
-
-    <!-- Styles -->
     <style>
-    #chartdiv {
-        width: 100%;
-        height: 500px;
-        max-width: 100%;
-        margin-left: auto;
-        margin-right: auto;
-    }
+            #chartdiv {
+                width: 100%;
+                height: 500px;
+                max-width: 100%;
+                margin-left: auto;
+                margin-right: auto;
+            }
     </style>
-    <!-- Resources -->
-    <script src="/webjars/amcharts/5.1.4/index.js"></script>
-    <script src="/webjars/amcharts/5.1.4/xy.js"></script>
-    <script src="/webjars/amcharts/5.1.4/themes/Animated.js"></script>
+
+    <!-- Core -->
+    <script src="/js/index.js"></script>
+
+    <!-- Chart type -->
+    <script src="/js/xy.js"></script>
+
+    <!-- Themes -->
+    <script src="/js/themes/Animated.js"></script>
 
 </head>
 <body>
-<!-- Chart container -->
-<div id="chartdiv"></div>
+<header>
+    <h1>DAS  Tool - 4 Victus</h1>
+</header>
 
-<!-- Chart code -->
-<script>
-console.log("Hello, World!!!");
-document.addEventListener('DOMContentLoaded', function() {
-console.log("Hello, World!");
-am5.ready(function() {
-    // Create root element
-    var root = am5.Root.new("chartdiv");
+<main>
+    <p>This is a title</p><br>
+    <h1>Portfolio</h1><br>
+    Here should be one day all relevant information about the systems.<br>
+    <a href="/">Home</a><br>
+    <a href="/error">Error</a><br>
+    <a href="/shutdown.html">Close Server</a><br><br>
+    <!-- Chart container -->
+    <div id="chartdiv"></div><br>
+</main>
 
-    // Set themes
-    root.setThemes([am5.themes.Animated.new(root)]);
+<footer>
+    <label>® RaspHat.com</label>
+</footer>
 
-    // Create chart
-    var chart = root.container.children.push(am5.xy.XYChart.new(root, {
-        panX: true,
-        panY: true,
-        wheelX: "panX",
-        wheelY: "zoomX",
-        pinchZoomX: true
-    }));
+<script src="/js/chart.js"></script>
 
-    // Create axes
-    var xAxis = chart.xAxes.push(am5.xy.DateAxis.new(root, {
-        maxDeviation: 0.2,
-        baseInterval: {
-            timeUnit: "day",
-            count: 1
-        }
-    }));
-
-    var yAxis = chart.yAxes.push(am5.xy.ValueAxis.new(root));
-
-    // Add series
-    var series = chart.series.push(am5.xy.LineSeries.new(root, {
-        xAxis: xAxis,
-        yAxis: yAxis,
-        valueXField: "date",
-        valueYField: "duration"
-    }));
-
-    // Fetch chart data
-    fetch('/chart-data')
-        .then(response => response.json())
-        .then(data => {
-        // Convert map to array of objects
-
-        const dataArray = Object.entries(data).map(([date, duration]) => ({ date, duration }));
-        console.log(data); // Output the received data to the console
-            // Set data
-            series.data.setAll(data.data);
-        });
-
-    // Make stuff animate on load
-    chart.appear(1000, 100);
-});
-}
-</script>
 </body>
 </html>
