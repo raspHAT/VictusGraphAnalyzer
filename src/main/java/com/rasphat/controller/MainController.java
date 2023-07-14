@@ -112,12 +112,17 @@ public class MainController extends Upload implements ErrorController {
     public Map<String, Object> getChartData() {
         Map<String, Object> chartData = new HashMap<>();
         List<Map<String, Object>> dataPoints = new ArrayList<>();
-
+        int count = 0;
         for (Map.Entry<LocalDateTime, Duration> entry : UploadVictus.getDateTimeDurationMap().entrySet()) {
             Map<String, Object> dataPoint = new HashMap<>();
             dataPoint.put("date", entry.getKey().toString());
             dataPoint.put("duration", entry.getValue().toMillis());
             dataPoints.add(dataPoint);
+
+            count++;
+            if (count >= 10) {
+                break; // Stop after the first 100 data points
+            }
         }
 
         chartData.put("data", dataPoints);
